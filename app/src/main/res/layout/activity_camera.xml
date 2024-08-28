@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ActivityCamera"
+
+    android:background="@color/background_color">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,TextContrastCheck,ContentDescription,Autofill">
+
+        <LinearLayout
+            android:id="@+id/llHeader"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            style="@style/HeadNavFrame"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/ibLeftArrow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/icon_arrow_left"
+                style="@style/HeadNavImage" />
+
+            <TextView
+                android:id="@+id/tvPageTitle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Skin Analyzation"
+                style="@style/HeadNavCenterTitle"/>
+
+            <ImageButton
+                android:id="@+id/ibRightArrow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/icon_arrow_right_disabled"
+                style="@style/HeadNavImage"/>
+
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvPreviewFrame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:cardCornerRadius="25dp"
+
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            app:layout_constraintTop_toBottomOf="@id/llHeader"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tvHint">
+
+            <ImageView
+                android:id="@+id/ivCameraPreview"
+                android:layout_width="match_parent"
+                android:scaleType="centerCrop"
+                android:layout_height="match_parent"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click send when done taking or selecting image"
+            style="@style/TextSubTitle"
+
+            android:layout_marginBottom="25dp"
+            app:layout_constraintBottom_toTopOf="@id/llControls"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        <LinearLayout
+            android:id="@+id/llControls"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            style="@style/HeadNavFrame"
+
+            android:layout_marginBottom="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/ibGallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_image_square"
+                style="@style/HeadNavImage"
+                android:layout_marginStart="25dp"/>
+
+            <ImageButton
+                android:id="@+id/ibCamera"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:src="@drawable/icon_camera"
+                style="@style/HeadNavImage" />
+
+            <ImageButton
+                android:id="@+id/ibSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_paper_plane"
+                style="@style/HeadNavImage"
+                android:layout_marginEnd="25dp"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

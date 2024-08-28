@@ -1,0 +1,118 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.Dermocura" parent="Theme.Material3.DayNight.NoActionBar">
+
+    </style>
+
+    <style name="Theme.Dermocura" parent="Base.Theme.Dermocura" />
+
+    <!-- For Edit Text or User Input -->
+    <style name="InputFrame">
+        <item name="android:background">@drawable/shape_edit_text</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="InputIcon">
+        <item name="android:layout_marginStart">15dp</item>
+    </style>
+
+    <style name="InputEntry">
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">15dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@null</item>
+        <item name="android:fontFamily">@font/carlito_regular</item>
+        <item name="android:textColor">@color/hint_color</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- For Edit Text or User Input -->
+    <style name="ClickButton">
+        <item name="android:backgroundTint">@color/accent_color</item>
+        <item name="android:fontFamily">@font/carlito_bold</item>
+        <item name="android:textColor">@color/background_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="cornerRadius">10sp</item>
+    </style>
+
+    <!-- For Page Title -->
+    <style name="TextTitle">
+        <item name="android:fontFamily">@font/carlito_bold</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/accent_color</item>
+        <item name="android:textSize">50sp</item>
+    </style>
+
+    <!-- For Page SubTitle -->
+    <style name="TextSubTitle">
+        <item name="android:fontFamily">@font/carlito_regular</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/secondary_text_color</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- For Page Bottom Text Button -->
+    <style name="TextButtonTitle">
+        <item name="android:fontFamily">@font/carlito_regular</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/secondary_text_color</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- For Header Navigation -->
+    <style name="HeadNavFrame">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    <style name="HeadNavImage">
+        <item name="android:contentDescription">Left Arrow Icon</item>
+        <item name="android:background">@null</item>
+    </style>
+    <style name="HeadNavCenterTitle">
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/tertiary_text_color</item>
+        <item name="android:fontFamily">@font/carlito_regular</item>
+    </style>
+
+    <!-- Base Style for MaterialButton -->
+    <style name="BaseButtonStyle">
+        <item name="cornerRadius">0dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">0dp</item>
+    </style>
+
+    <!-- Style for Left Button -->
+    <style name="LeftButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="boxCornerRadiusTopEnd">0dp</item>
+        <item name="boxCornerRadiusBottomEnd">0dp</item>
+        <item name="android:insetRight">-1dp</item>
+    </style>
+
+    <!-- Style for Right Button -->
+    <style name="RightButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="boxCornerRadiusTopStart">0dp</item>
+        <item name="boxCornerRadiusBottomStart">0dp</item>
+        <item name="android:insetLeft">-1dp</item>
+    </style>
+
+    <style name="BottomNavTextAppearanceActive" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textSize">10sp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="BottomNavTextAppearanceInactive" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textSize">10sp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+</resources>

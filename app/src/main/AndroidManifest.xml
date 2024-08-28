@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <queries>
+
+        <!-- Intent to capture images using the camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <!-- Intent to pick images from the gallery -->
+        <intent>
+            <action android:name="android.intent.action.PICK" />
+
+            <data android:mimeType="image/*" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Dermocura"
+        tools:replace="android:allowBackup"
+        tools:targetApi="31">
+        <activity
+            android:name=".activities.ActivityContacts"
+            android:exported="false" />
+        <activity
+            android:name=".activities.NewDashboard"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB_cPoKT-iK9saOx78Utksu8bYgLa0_l1s" />
+
+        <activity
+            android:name=".activities.ActivityGeoLocation"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityTelemedicine"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityAppointmentInfo"
+            android:exported="false" />
+        <activity
+            android:name=".models.ModelDoctor"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivitySetAppointment"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityTreatment"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityRecommendation"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityAnalyzation"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityHistory"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityScanSummary"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivitySecondInfo"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityScanInfo"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityCamera"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityChangePassword"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivitySetPassword"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityRecoveryCode"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityRegister"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityPasswordRecovery"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityDashboard"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ActivityLogin"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

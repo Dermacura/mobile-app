@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ActivityRegister"
+
+    android:background="@color/background_color">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,TextContrastCheck,ContentDescription,Autofill">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register Now!"
+            style="@style/TextTitle"
+
+            android:layout_marginTop="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSubTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Register and track your skin health"
+            style="@style/TextSubTitle"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+        <LinearLayout
+            android:id="@+id/llFullName"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@style/InputFrame"
+
+            android:layout_marginTop="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSubTitle">
+
+            <ImageView
+                android:id="@+id/ivFullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputIcon"
+
+                android:contentDescription="Email Icon"
+                android:src="@drawable/icon_user" />
+
+            <EditText
+                android:id="@+id/etFullName"
+                style="@style/InputEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:autofillHints="name"
+                android:hint="Full Name"
+                android:inputType="textPersonName" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@style/InputFrame"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llFullName">
+
+            <ImageView
+                android:id="@+id/ivEmailAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputIcon"
+
+                android:contentDescription="Email Icon"
+                android:src="@drawable/icon_envelope" />
+
+            <EditText
+                android:id="@+id/etEmailAddress"
+                style="@style/InputEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:autofillHints="emailAddress"
+                android:hint="Email Address"
+                android:inputType="textEmailAddress" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@style/InputFrame"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llEmailAddress">
+
+            <ImageView
+                android:id="@+id/ivPhoneNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputIcon"
+
+                android:contentDescription="Email Icon"
+                android:src="@drawable/icon_address_book" />
+
+            <EditText
+                android:id="@+id/etPhoneNumber"
+                style="@style/InputEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:autofillHints=""
+                android:hint="Contact Number"
+                android:inputType="phone|number" />
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnContinue"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Continue"
+            style="@style/ClickButton"
+
+            android:layout_marginBottom="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tvLogin" />
+
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Already Have an Account"
+            style="@style/TextButtonTitle"
+
+            android:layout_marginBottom="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

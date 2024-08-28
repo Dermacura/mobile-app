@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ActivityRecoveryCode"
+
+    android:background="@color/background_color">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,TextContrastCheck,ContentDescription,Autofill">
+
+        <LinearLayout
+            android:id="@+id/llHeader"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            style="@style/HeadNavFrame"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/ibLeftArrow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/icon_arrow_left"
+                style="@style/HeadNavImage" />
+
+            <TextView
+                android:id="@+id/tvPageTitle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Recovery Code"
+                style="@style/HeadNavCenterTitle"/>
+
+            <ImageButton
+                android:id="@+id/ibRightArrow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/icon_arrow_right"
+                style="@style/HeadNavImage"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Recovery Code"
+            style="@style/TextTitle"
+
+            android:layout_marginTop="75dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llHeader" />
+
+        <TextView
+            android:id="@+id/tvSubTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="These are for resetting password."
+            style="@style/TextSubTitle"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+        <LinearLayout
+            android:id="@+id/llSkinType"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@style/InputFrame"
+
+            android:layout_marginTop="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSubTitle">
+
+            <ImageView
+                android:id="@+id/ivSkinType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputIcon"
+
+                android:contentDescription="Email Icon"
+                android:src="@drawable/icon_terminal" />
+
+            <EditText
+                android:id="@+id/etSkinType"
+                style="@style/InputEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:autofillHints="emailAddress"
+                android:hint="kinetic-meager-continue-flowery"
+                android:inputType="none" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llAdditional"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@style/InputFrame"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llSkinType">
+
+            <ImageView
+                android:id="@+id/ivAdditional"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputIcon"
+
+                android:contentDescription="Email Icon"
+                android:src="@drawable/icon_terminal" />
+
+            <EditText
+                android:id="@+id/etAdditional"
+                style="@style/InputEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:autofillHints="emailAddress"
+                android:hint="imbibe-marksmen-hussar-weekly"
+                android:inputType="none" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llGender"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@style/InputFrame"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llAdditional">
+
+            <ImageView
+                android:id="@+id/ivGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputIcon"
+
+                android:contentDescription="Email Icon"
+                android:src="@drawable/icon_terminal" />
+
+            <EditText
+                android:id="@+id/etGender"
+                style="@style/InputEntry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:autofillHints="emailAddress"
+                android:hint="disdain-cafe-humidor-becalm"
+                android:inputType="none" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save these somewhere in case you forget your password"
+            style="@style/TextButtonTitle"
+
+            android:textColor="@color/tertiary_text_color"
+
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llGender" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnContinue"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Continue"
+            style="@style/ClickButton"
+
+            android:layout_marginBottom="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

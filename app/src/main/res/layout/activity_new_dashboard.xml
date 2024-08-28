@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".activities.NewDashboard">
+
+    <!-- Main Content Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Fixed Header Section -->
+        <LinearLayout
+            android:id="@+id/header_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="25dp"
+            android:background="@color/background_color"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Username Container -->
+            <LinearLayout
+                android:id="@+id/username_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/greeting_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome Back"
+                    android:textSize="18sp"
+                    android:textColor="@color/secondary_text_color"
+                    android:fontFamily="sans-serif" />
+
+                <TextView
+                    android:id="@+id/username_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lemonaru"
+                    android:textSize="24sp"
+                    android:textColor="@color/primary_text_color"
+                    android:fontFamily="@font/carlito_bold" />
+
+            </LinearLayout>
+
+            <!-- Profile Picture -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/profile_picture_card"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="4dp">
+
+                <ImageView
+                    android:id="@+id/profile_picture"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="user profile"
+                    android:src="@drawable/default_placeholder" />
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <!-- Scrollable Content -->
+        <ScrollView
+            android:id="@+id/main_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/header_layout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Inner Content Container -->
+            <LinearLayout
+                android:id="@+id/main_content_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- User Statistics Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/user_statistics_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Patient Analytics"
+                        android:textSize="18sp"
+                        android:textColor="@color/primary_text_color"
+                        android:fontFamily="@font/carlito_bold" />
+
+                    <TextView
+                        android:id="@+id/view_all_user_info_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View all"
+                        android:textSize="14sp"
+                        android:textColor="@color/secondary_text_color"
+                        android:fontFamily="@font/carlito_regular" />
+
+                </LinearLayout>
+
+                <!-- Scan Information Section -->
+                <LinearLayout
+                    android:id="@+id/llScanInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="10dp">
+
+                    <!-- Last Scan Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvLastScan"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardBackgroundColor="@color/surface_color">
+
+                        <LinearLayout
+                            android:id="@+id/llLastScanContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:id="@+id/tvLastScanLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Last Scanned"
+                                android:textSize="14sp"
+                                android:textColor="@color/secondary_text_color"
+                                android:gravity="center" />
+
+                            <TextView
+                                android:id="@+id/tvLastScanDays"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="1 hour ago"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/primary_text_color"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center" />
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Total Scan Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvTotalScan"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:layout_marginStart="8dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardBackgroundColor="@color/surface_color">
+
+                        <LinearLayout
+                            android:id="@+id/llTotalScanContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="16dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvTotalScanLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Previous Result"
+                                android:textSize="14sp"
+                                android:textColor="@color/secondary_text_color"
+                                android:gravity="center" />
+
+                            <TextView
+                                android:id="@+id/tvTotalScanCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Acne"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/accent_color"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center" />
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/divider_appointment"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginBottom="25dp"
+                    app:layout_constraintTop_toBottomOf="@id/llScanInfo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Upcoming Schedule Header -->
+                <LinearLayout
+                    android:id="@+id/appointment_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/upcoming_schedule_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Patient Appointment"
+                        android:textSize="18sp"
+                        android:textColor="@color/primary_text_color"
+                        android:fontFamily="@font/carlito_bold" />
+
+                    <TextView
+                        android:id="@+id/view_all_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View All"
+                        android:textSize="14sp"
+                        android:textColor="@color/secondary_text_color"
+                        android:fontFamily="@font/carlito_regular" />
+                </LinearLayout>
+
+                <!-- Upcoming Schedule Item -->
+                <LinearLayout
+                    android:id="@+id/llAppointmentInformation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp">
+
+                    <!-- Date Section (This will be removed in Java) -->
+                    <TextView
+                        android:id="@+id/tvAppointmentDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="22 Dec, Thursday"
+                        android:textSize="14sp"
+                        android:textColor="@color/tertiary_text_color"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <!-- Appointment Details Section (This will be removed in Java) -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp">
+
+                        <!-- Doctor's Image inside CardView -->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cvDoctorImage"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            app:cardCornerRadius="10dp"
+                            android:layout_alignParentStart="true">
+
+                            <ImageView
+                                android:id="@+id/ivDoctorImage"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/default_placeholder"
+                                android:scaleType="centerCrop"
+                                android:contentDescription="doctor profile" />
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Doctor's Name -->
+                        <TextView
+                            android:id="@+id/tvDoctorName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/cvDoctorImage"
+                            android:layout_alignTop="@id/cvDoctorImage"
+                            android:layout_marginStart="12dp"
+                            android:text="Dr. Gabriela Christie"
+                            android:textSize="16sp"
+                            android:textColor="@color/primary_text_color"
+                            android:fontFamily="@font/carlito_bold" />
+
+                        <!-- Doctor's Specialty -->
+                        <TextView
+                            android:id="@+id/tvDoctorSpecialty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/cvDoctorImage"
+                            android:layout_below="@id/tvDoctorName"
+                            android:layout_marginStart="12dp"
+                            android:text="Psychology Specialist"
+                            android:textSize="14sp"
+                            android:textColor="@color/secondary_text_color"
+                            android:fontFamily="@font/carlito_regular" />
+
+                        <!-- Appointment Time -->
+                        <TextView
+                            android:id="@+id/tvAppointmentTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@id/cvDoctorImage"
+                            android:layout_toEndOf="@id/cvDoctorImage"
+                            android:layout_marginStart="12dp"
+                            android:text="10:30 am - 11:30 am"
+                            android:textSize="14sp"
+                            android:textColor="@color/accent_color"
+                            android:fontFamily="sans-serif-medium"
+                            android:gravity="center" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginBottom="25dp"
+                    app:layout_constraintTop_toBottomOf="@id/llScanInfo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Feature Applications Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/application_section_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Additional Features"
+                        android:textAlignment="center"
+                        android:textSize="18sp"
+                        android:textColor="@color/primary_text_color"
+                        android:fontFamily="@font/carlito_bold" />
+                </LinearLayout>
+
+                <!-- Quick Actions -->
+                <LinearLayout
+                    android:id="@+id/llQuickActions1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="top|center"
+                    android:weightSum="3"
+                    android:layout_marginTop="10dp">
+
+                    <!-- Appointment Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvAppointment"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="@color/surface_color">
+
+                        <LinearLayout
+                            android:id="@+id/llAppointmentContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:id="@+id/ivAppointmentIcon"
+                                android:layout_width="29dp"
+                                android:layout_height="29dp"
+                                android:src="@drawable/icon_calendar_heart"/>
+
+                            <TextView
+                                android:id="@+id/tvAppointmentLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Appointment"
+                                android:textColor="@color/primary_text_color"
+                                android:textSize="11sp"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center"/>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Geolocation Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvGeolocation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="@color/surface_color">
+
+                        <LinearLayout
+                            android:id="@+id/llGeolocationContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:id="@+id/ivGeolocationIcon"
+                                android:layout_width="29dp"
+                                android:layout_height="29dp"
+                                android:src="@drawable/icon_map_pin"/>
+
+                            <TextView
+                                android:id="@+id/tvGeolocationLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Geolocation"
+                                android:textColor="@color/primary_text_color"
+                                android:textSize="11sp"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center"/>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Information Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvInformation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="@color/surface_color">
+
+                        <LinearLayout
+                            android:id="@+id/llInformationContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="10dp"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:id="@+id/ivInformationIcon"
+                                android:layout_width="29dp"
+                                android:layout_height="29dp"
+                                android:src="@drawable/icon_book"/>
+
+                            <TextView
+                                android:id="@+id/tvInformationLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Disease List"
+                                android:textColor="@color/primary_text_color"
+                                android:textSize="11sp"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center"/>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+                <!-- Additional scrollable content goes here -->
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <!-- Custom Navigation Bar -->
+        <LinearLayout
+            android:id="@+id/navigation_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/background_navigation"
+            android:padding="16dp"
+            android:gravity="center"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Home Button -->
+            <ImageView
+                android:id="@+id/home_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="home"
+                android:src="@drawable/icon_house"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <!-- Appointment Button -->
+            <ImageView
+                android:id="@+id/appointment_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="appointment"
+                android:src="@drawable/icon_calendar"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <!-- Messages Button -->
+            <ImageView
+                android:id="@+id/messages_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="messages"
+                android:src="@drawable/icon_mail"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <!-- Profile Button -->
+            <ImageView
+                android:id="@+id/camera_button"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:contentDescription="camera"
+                android:src="@drawable/icon_camera"
+                android:clickable="true"
+                android:focusable="true"
+                tools:ignore="TouchTargetSizeCheck" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MainFrame">
+        <item name="android:layout_marginHorizontal">30dp</item>
+
+    </style>
+</resources>
