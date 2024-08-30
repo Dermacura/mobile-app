@@ -139,7 +139,7 @@ public class ActivityTelemedicine extends AppCompatActivity {
 
         try {
             requestBody.put("patientID", patientID);
-            requestBody.put("clinicInfoID", userAccID);
+            requestBody.put("userAccID", userAccID);
             requestBody.put("telemedicineContent", messageContent);
             requestBody.put("recipientRole", 0); // Assuming 0 means outgoing
         } catch (JSONException e) {

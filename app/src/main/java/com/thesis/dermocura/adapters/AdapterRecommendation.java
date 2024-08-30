@@ -26,7 +26,7 @@ public class AdapterRecommendation extends RecyclerView.Adapter<AdapterRecommend
     // Inflate the card layout from XML
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.recommendation_card, parent, false);
+        View view = mInflater.inflate(R.layout.item_result_card, parent, false);
         return new ViewHolder(view);
     }
 

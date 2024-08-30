@@ -1,6 +1,7 @@
 package com.thesis.dermocura.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -91,7 +92,13 @@ public class ActivityScanInfo extends AppCompatActivity {
 
     private void setOnClickListeners() {
         // Clickable Material buttons
-        btnContinue.setOnClickListener(v -> clickContinue());
+        btnContinue.setOnClickListener(v -> {
+            String txtWait = "Please Wait...";
+            btnContinue.setText(txtWait);
+            btnContinue.setEnabled(false);
+            btnContinue.setBackgroundColor(Color.GRAY);
+            clickContinue();
+        });
     }
 
     private void clickContinue() {
@@ -232,7 +239,7 @@ public class ActivityScanInfo extends AppCompatActivity {
                 // Login successful
                 Log.d(TAG + " onRequestSuccess", "Message Response: " + message);
                 Log.d(TAG + " onRequestSuccess", "JSON Received: " + response);
-                Intent intent = new Intent(this, ActivityScanSummary.class);
+                Intent intent = new Intent(this, ActivityDiseaseInfo.class);
                 intent.putExtra("description", description);
                 intent.putExtra("recommendation", recommendation);
                 intent.putExtra("treatment", treatment);

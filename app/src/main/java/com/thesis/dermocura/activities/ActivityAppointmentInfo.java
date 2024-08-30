@@ -25,7 +25,6 @@ import com.google.android.material.button.MaterialButton;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.classes.MySharedPreferences;
 import com.thesis.dermocura.datas.UserData;
-import com.thesis.dermocura.models.ModelDoctor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -319,7 +318,7 @@ public class ActivityAppointmentInfo extends AppCompatActivity {
 
                         if (success) {
                             Log.d(TAG + " registerAppointment", "Appointment registered successfully: " + message);
-                            Intent intent = new Intent(this, ActivityDashboard.class);
+                            Intent intent = new Intent(this, ActivityOldDashboard.class);
                             startActivity(intent);
                             finish();
                         } else {

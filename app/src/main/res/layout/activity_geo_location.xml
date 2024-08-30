@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".activities.ActivityGeoLocation">
 
+    <!-- Spinner for selecting a marker -->
+    <Spinner
+        android:id="@+id/spinnerMarkers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="16dp"/>
+
     <!-- A button to trigger some action, like centering on the user's location -->
     <Button
         android:id="@+id/btnCenterOnLocation"

@@ -50,7 +50,7 @@
             android:name=".activities.ActivityContacts"
             android:exported="false" />
         <activity
-            android:name=".activities.NewDashboard"
+            android:name=".activities.ActivityDashboard"
             android:exported="false" />
 
         <meta-data
@@ -85,7 +85,7 @@
             android:name=".activities.ActivityHistory"
             android:exported="false" />
         <activity
-            android:name=".activities.ActivityScanSummary"
+            android:name=".activities.ActivityDiseaseInfo"
             android:exported="false" />
         <activity
             android:name=".activities.ActivitySecondInfo"
@@ -112,7 +112,7 @@
             android:name=".activities.ActivityPasswordRecovery"
             android:exported="false" />
         <activity
-            android:name=".activities.ActivityDashboard"
+            android:name=".activities.ActivityOldDashboard"
             android:exported="false" />
         <activity
             android:name=".activities.ActivityLogin"

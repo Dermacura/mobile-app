@@ -82,7 +82,7 @@ public class ActivitySecondInfo extends AppCompatActivity {
         // Validate user input
         if (validateInputs(skin_type, additional)) {
             storeInformation(skin_type, additional);
-            Intent intentSecondInfo = new Intent(ActivitySecondInfo.this, ActivityScanSummary.class);
+            Intent intentSecondInfo = new Intent(ActivitySecondInfo.this, ActivityDiseaseInfo.class);
             startActivity(intentSecondInfo);
         } else {
             Log.e(TAG + " clickContinue", "Validation Failed");

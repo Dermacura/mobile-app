@@ -3,20 +3,12 @@ package com.thesis.dermocura;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.thesis.dermocura.activities.ActivityDashboard;
-import com.thesis.dermocura.activities.ActivityGeoLocation;
-import com.thesis.dermocura.activities.ActivityTelemedicine;
-import com.thesis.dermocura.activities.NewDashboard;
 import com.thesis.dermocura.classes.MySharedPreferences;
 import com.thesis.dermocura.datas.*;
 
-import com.thesis.dermocura.activities.ActivityCamera;
 import com.thesis.dermocura.activities.ActivityLogin;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if userData exists and print appropriate message
         if (userData != null) {
-            Intent intentDashboard = new Intent(MainActivity.this, NewDashboard.class);
+            Intent intentDashboard = new Intent(MainActivity.this, ActivityDashboard.class);
             startActivity(intentDashboard);
             finish();
         } else {

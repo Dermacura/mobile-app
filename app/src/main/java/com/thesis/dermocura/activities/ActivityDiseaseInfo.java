@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,29 +19,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.adapters.AdapterRecommendation;
-import com.thesis.dermocura.classes.ClassBase64Convert;
-import com.thesis.dermocura.classes.MySharedPreferences;
 import com.thesis.dermocura.datas.ScanData;
-import com.thesis.dermocura.datas.UserData;
 import com.thesis.dermocura.models.ModelRecommendation;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityScanSummary extends AppCompatActivity {
+public class ActivityDiseaseInfo extends AppCompatActivity {
 
     ImageButton ibLeftArrow, ibRightArrow;
     TextView tvPageTitle, tvInformation;
@@ -56,7 +43,7 @@ public class ActivityScanSummary extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_scan_summary);
+        setContentView(R.layout.activity_disease_info);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -86,7 +73,7 @@ public class ActivityScanSummary extends AppCompatActivity {
     private void setOnClickListeners() {
         // Clickable Material buttons
         btnContinue.setOnClickListener(v -> {
-            Intent intent = new Intent(ActivityScanSummary.this, NewDashboard.class);
+            Intent intent = new Intent(ActivityDiseaseInfo.this, ActivityDashboard.class);
             startActivity(intent);
             finish();
         });

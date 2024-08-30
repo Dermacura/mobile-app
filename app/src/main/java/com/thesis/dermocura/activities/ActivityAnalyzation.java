@@ -65,7 +65,7 @@ public class ActivityAnalyzation extends AppCompatActivity {
         btnContinue.setOnClickListener(v -> {
             SkinDiseaseData skinDiseaseData = SkinDiseaseData.getInstance();
             skinDiseaseData.clearData();
-            Intent intentRecommendation = new Intent(this, ActivityDashboard.class);
+            Intent intentRecommendation = new Intent(this, ActivityOldDashboard.class);
             startActivity(intentRecommendation);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });

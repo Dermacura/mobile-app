@@ -90,7 +90,7 @@ public class ActivityCamera extends AppCompatActivity {
         ibGallery.setOnClickListener(v -> openGallery());
         ibSend.setOnClickListener(v -> clickSend());
         ibLeftArrow.setOnClickListener(v -> {
-            Intent intent = new Intent(ActivityCamera.this, NewDashboard.class);
+            Intent intent = new Intent(ActivityCamera.this, ActivityDashboard.class);
             startActivity(intent);
             finish();
         });

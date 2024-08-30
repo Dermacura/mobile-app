@@ -219,7 +219,7 @@ public class ActivityLogin extends AppCompatActivity {
                 llEmailAddress.setBackgroundResource(R.drawable.shape_edit_text_selected);
                 llPassword.setBackgroundResource(R.drawable.shape_edit_text_selected);
 
-                Intent intentActivity = new Intent(ActivityLogin.this, NewDashboard.class);
+                Intent intentActivity = new Intent(ActivityLogin.this, ActivityDashboard.class);
                 startActivity(intentActivity);
             } else {
                 // Login failed
