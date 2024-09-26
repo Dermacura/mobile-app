@@ -3,11 +3,13 @@ package com.thesis.dermocura.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.models.ModelChat;
 
@@ -75,16 +77,29 @@ public class AdapterChat extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     static class IncomingMessageViewHolder extends RecyclerView.ViewHolder {
         TextView textViewMessage, textViewTime;
+        ImageView profileImage;  // Add reference to profile image
 
         public IncomingMessageViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewMessage = itemView.findViewById(R.id.textViewMessage);
             textViewTime = itemView.findViewById(R.id.textViewTime);
+            profileImage = itemView.findViewById(R.id.profile_image);  // Reference the profile image view
         }
 
         void bind(ModelChat message) {
             textViewMessage.setText(message.getText());
             textViewTime.setText(message.getTime());
+
+            // Load profile image using Glide
+            String profileUrl = message.getProfileImageUrl();
+            if (profileUrl != null && !profileUrl.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(profileUrl)
+                        .placeholder(R.drawable.default_placeholder)  // Set placeholder
+                        .into(profileImage);  // Load the profile image into ImageView
+            } else {
+                profileImage.setImageResource(R.drawable.default_placeholder);  // Default image if URL is empty
+            }
         }
     }
 }

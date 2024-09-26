@@ -86,25 +86,24 @@ public class ActivityCamera extends AppCompatActivity {
     }
 
     private void setOnClickListeners() {
-        ibCamera.setOnClickListener(v -> handleCameraButtonClick());
-        ibGallery.setOnClickListener(v -> openGallery());
+        ibCamera.setOnClickListener(v -> clickCamera());
+        ibGallery.setOnClickListener(v -> clickGallery());
         ibSend.setOnClickListener(v -> clickSend());
-        ibLeftArrow.setOnClickListener(v -> {
-            Intent intent = new Intent(ActivityCamera.this, ActivityDashboard.class);
-            startActivity(intent);
-            finish();
-        });
+        ibLeftArrow.setOnClickListener(v -> clickLeftArrow());
     }
 
     private void clickSend() {
-        // Create an intent to start the PasswordReset activity
         Intent intentFirstInfo = new Intent(ActivityCamera.this, ActivityScanInfo.class);
-
-        // Start the PasswordReset activity
         startActivity(intentFirstInfo);
     }
 
-    private void handleCameraButtonClick() {
+    private void clickLeftArrow() {
+        Intent intent = new Intent(ActivityCamera.this, ActivityDashboard.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void clickCamera() {
         if (isCameraPermissionGranted()) {
             openCamera();
         } else {
@@ -112,31 +111,65 @@ public class ActivityCamera extends AppCompatActivity {
         }
     }
 
+    private void clickGallery() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, 200);
+    }
+
     private boolean isCameraPermissionGranted() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        return permissionStatus == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+        String[] permissions = {Manifest.permission.CAMERA};
+        ActivityCompat.requestPermissions(this, permissions, CAMERA_PERMISSION_CODE);
     }
 
     private void openCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                Log.e(TAG, "Error occurred while creating the file", ex);
-            }
-            if (photoFile != null) {
-                imageUri = FileProvider.getUriForFile(this, "com.thesis.dermocura.fileprovider", photoFile);
-                ScanData.getInstance().setImageUri(imageUri);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                //noinspection deprecation
-                startActivityForResult(cameraIntent, 100);
-            }
+
+        if (cameraIntent.resolveActivity(getPackageManager()) == null) {
+            Log.e(TAG, "No camera app available to handle the intent");
+            return;
         }
+
+        File photoFile = createPhotoFileSafely();
+        if (photoFile == null) {
+            Log.e(TAG, "Failed to create photo file");
+            return;
+        }
+
+        imageUri = getUriForFile(photoFile);
+        if (imageUri == null) {
+            Log.e(TAG, "Failed to get URI for photo file");
+            return;
+        }
+
+        ScanData.getInstance().setImageUri(imageUri);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(cameraIntent, 100);
+    }
+
+    private File createPhotoFileSafely() {
+        // Initialize the file to null
+        File photoFile = null;
+        // Attempt to create the image file
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            Log.e(TAG, "Error occurred while creating the file", ex);
+        }
+        // Return the created file, or null if an error occurred
+        return photoFile;
+    }
+
+
+    private Uri getUriForFile(File photoFile) {
+        // Define the authority string for the FileProvider
+        String authority = "com.thesis.dermocura.fileprovider";
+        // Return the generated URI
+        return FileProvider.getUriForFile(this, authority, photoFile);
     }
 
     private File createImageFile() throws IOException {
@@ -150,12 +183,6 @@ public class ActivityCamera extends AppCompatActivity {
         );
         currentPhotoPath = image.getAbsolutePath();
         return image;
-    }
-
-    private void openGallery() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        //noinspection deprecation
-        startActivityForResult(galleryIntent, 200);
     }
 
     @Override

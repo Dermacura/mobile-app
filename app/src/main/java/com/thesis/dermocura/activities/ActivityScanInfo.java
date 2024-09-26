@@ -29,6 +29,7 @@ import com.thesis.dermocura.classes.ClassBase64Convert;
 import com.thesis.dermocura.classes.MySharedPreferences;
 import com.thesis.dermocura.datas.ScanData;
 import com.thesis.dermocura.datas.UserData;
+import com.thesis.dermocura.utils.LoadingDialogFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,7 +48,8 @@ public class ActivityScanInfo extends AppCompatActivity {
 
     // Declare Strings
     private static final String TAG = "ActivityScanInfo";
-    private static final String URL = "https://zxky-server.tail07dc9b.ts.net/analyze_skin";
+    private static final String URL = "https://zxky.tail07dc9b.ts.net/predict";
+    private LoadingDialogFragment loadingDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,9 @@ public class ActivityScanInfo extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Initialize the loading dialog
+        loadingDialogFragment = new LoadingDialogFragment();
 
         // Initialize Methods
         initializeObjects();
@@ -93,15 +98,16 @@ public class ActivityScanInfo extends AppCompatActivity {
     private void setOnClickListeners() {
         // Clickable Material buttons
         btnContinue.setOnClickListener(v -> {
-            String txtWait = "Please Wait...";
-            btnContinue.setText(txtWait);
-            btnContinue.setEnabled(false);
-            btnContinue.setBackgroundColor(Color.GRAY);
             clickContinue();
         });
     }
 
     private void clickContinue() {
+        // Show loading dialog
+        if (loadingDialogFragment != null && !loadingDialogFragment.isAdded()) {
+            loadingDialogFragment.show(getSupportFragmentManager(), "LoadingDialog");
+        }
+
         // Retrieve user input from the input fields
         String skinType = etSkinType.getText().toString();
         String duration = etDuration.getText().toString();
@@ -188,6 +194,7 @@ public class ActivityScanInfo extends AppCompatActivity {
 
         // Create a Volley request queue
         RequestQueue queue = Volley.newRequestQueue(this);
+        Log.d(TAG, "makeHTTPRequest: Image" + base64String);
 
         // Populate the JSON request body
         try {
@@ -225,28 +232,26 @@ public class ActivityScanInfo extends AppCompatActivity {
     }
 
     private void onRequestSuccess(JSONObject response) {
+        dismissLoadingDialog(); // Dismiss loading dialog on success
         try {
-            // Extract success status and message from the JSON response
             boolean success = response.getBoolean("success");
             String message = response.getString("message");
 
-            String description = response.getString("disease_description");
-            String recommendation = response.getString("disease_recommendation");
-            String treatment = response.getString("disease_treatment");
-            String symptoms = response.getString("disease_symptoms");
-
             if (success) {
-                // Login successful
-                Log.d(TAG + " onRequestSuccess", "Message Response: " + message);
-                Log.d(TAG + " onRequestSuccess", "JSON Received: " + response);
+                String diseaseName = response.getString("disease_name");
+                String description = response.getString("disease_description");
+                String recommendation = response.getString("disease_recommendation");
+                String treatment = response.getString("disease_treatment");
+                String symptoms = response.getString("disease_symptoms");
+
                 Intent intent = new Intent(this, ActivityDiseaseInfo.class);
+                intent.putExtra("disease_name", diseaseName);
                 intent.putExtra("description", description);
                 intent.putExtra("recommendation", recommendation);
                 intent.putExtra("treatment", treatment);
                 intent.putExtra("symptoms", symptoms);
                 startActivity(intent);
             } else {
-                // Login failed
                 Log.e(TAG + " onRequestSuccess", "Message Response: " + message);
             }
         } catch (JSONException e) {
@@ -256,6 +261,7 @@ public class ActivityScanInfo extends AppCompatActivity {
     }
 
     private void onRequestError(VolleyError error) {
+        dismissLoadingDialog(); // Dismiss loading dialog on error
         Log.e(TAG + " onRequestError", "Error Response: " + error.getMessage());
         if (error.networkResponse != null) {
             Log.e(TAG + " onRequestError", "Status Code: " + error.networkResponse.statusCode);
@@ -265,6 +271,12 @@ public class ActivityScanInfo extends AppCompatActivity {
             } catch (Exception e) {
                 Log.e(TAG + " onRequestError", "Failed to parse error response", e);
             }
+        }
+    }
+
+    private void dismissLoadingDialog() {
+        if (loadingDialogFragment != null && loadingDialogFragment.isVisible()) {
+            loadingDialogFragment.dismiss();
         }
     }
 }

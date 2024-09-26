@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.button.MaterialButton;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.adapters.AdapterRecommendation;
@@ -28,6 +29,8 @@ import com.thesis.dermocura.models.ModelRecommendation;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class ActivityDiseaseInfo extends AppCompatActivity {
 
@@ -81,10 +84,15 @@ public class ActivityDiseaseInfo extends AppCompatActivity {
 
     private void fetchIntentExtra() {
         Intent intent = getIntent();
+        String diseaseName = intent.getStringExtra("disease_name");  // Fetch the disease_name extra
         String skin_disease = intent.getStringExtra("description");
         String recommendation = intent.getStringExtra("recommendation");
         String treatment_suggestion = intent.getStringExtra("treatment");
         String symptoms = intent.getStringExtra("symptoms");
+
+        // Set the disease name in the overlay text
+        TextView tvOverlayText = findViewById(R.id.tvOverlayText);
+        tvOverlayText.setText(diseaseName);
 
         setInformationCards(skin_disease, recommendation, treatment_suggestion, symptoms);
     }
@@ -117,6 +125,8 @@ public class ActivityDiseaseInfo extends AppCompatActivity {
         if (imageUri != null) {
             String imageUrl = imageUri.toString();
             loadImageFromUrl(imageUrl, ivPreview);
+            // Set opacity to 50%
+            ivPreview.setAlpha(0.25f);
         } else {
             Log.d("displayImage", "No imageUri available");
         }
@@ -126,6 +136,7 @@ public class ActivityDiseaseInfo extends AppCompatActivity {
         Glide.with(this)
                 .load(url)
                 .placeholder(R.drawable.default_placeholder)
+                .apply(RequestOptions.bitmapTransform(new BlurTransformation(25)))
                 .into(imageView);
     }
 }

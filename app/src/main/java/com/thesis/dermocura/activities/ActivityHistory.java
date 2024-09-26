@@ -5,8 +5,7 @@ import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,10 +22,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.thesis.dermocura.R;
+import com.thesis.dermocura.adapters.AdapterHistory;
 import com.thesis.dermocura.classes.MySharedPreferences;
 import com.thesis.dermocura.datas.UserData;
-import com.thesis.dermocura.models.*;
-import com.thesis.dermocura.adapters.*;
+import com.thesis.dermocura.models.ModelHistory;
+import com.thesis.dermocura.utils.LoadingDialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,9 +41,10 @@ public class ActivityHistory extends AppCompatActivity {
     ImageButton ibLeftArrow, ibRightArrow;
     TextView tvPageTitle, tvTitle, tvSubTitle;
     RecyclerView rvHistory;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LoadingDialogFragment loadingDialogFragment; // Loading dialog instance
 
     private AdapterHistory adapter;
-    private RecyclerView recyclerView;
     private List<ModelHistory> modelHistoryList;
 
     private static final String TAG = "ActivityHistory";
@@ -59,16 +61,29 @@ public class ActivityHistory extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize the data list and adapter
-        recyclerView = findViewById(R.id.rvHistory);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this::makeHTTPRequest); // Set pull-to-refresh action
+
+        // Initialize RecyclerView and set reversed layout
+        rvHistory = findViewById(R.id.rvHistory);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setReverseLayout(true); // Reverse the order
+        layoutManager.setStackFromEnd(true); // Stack the latest items from the end (bottom)
+        rvHistory.setLayoutManager(layoutManager);
 
         // Initialize the data list and adapter
         modelHistoryList = new ArrayList<>();
         adapter = new AdapterHistory(this, modelHistoryList);
-        recyclerView.setAdapter(adapter);
+        rvHistory.setAdapter(adapter);
 
+        // Initialize other views
         initializeObjects();
+
+        // Initialize the loading dialog fragment
+        loadingDialogFragment = new LoadingDialogFragment();
+
+        // Fetch data initially
         makeHTTPRequest();
     }
 
@@ -81,15 +96,15 @@ public class ActivityHistory extends AppCompatActivity {
         tvSubTitle = findViewById(R.id.tvSubTitle);
     }
 
-    private void setOnClickListeners() {
-        // TODO: HA
-    }
-
     private void makeHTTPRequest() {
+        // Show the loading dialog when starting a new request
+        showLoadingDialog();
+
         // Define keys for the JSON request body
         String keyPatientID = "patientID";
-
-        int patientID = 2;
+        MySharedPreferences mySharedPreferences = MySharedPreferences.getInstance(this);
+        UserData userData = mySharedPreferences.getUserData();
+        int patientID = userData.getPatientID();
 
         // Create a JSON object for the request body
         JSONObject requestBody = new JSONObject();
@@ -128,13 +143,26 @@ public class ActivityHistory extends AppCompatActivity {
             boolean success = response.getBoolean("success");
             String message = response.getString("message");
 
+            // Dismiss the loading dialog when data is fetched
+            dismissLoadingDialog();
+
+            // Stop the swipe refresh animation
+            swipeRefreshLayout.setRefreshing(false);
+
             if (success) {
-                // Login successful
+                // Log success
                 Log.d(TAG + " onRequestSuccess", "Message Response: " + message);
                 Log.d(TAG + " onRequestSuccess", "JSON Received: " + response);
 
                 // Extract the data array from the response
-                JSONArray dataArray = response.getJSONArray("data");
+                JSONArray dataArray = response.optJSONArray("data");
+
+                // Check if dataArray is null or empty
+                if (dataArray == null || dataArray.length() == 0) {
+                    // Show a toast if no records are found
+                    Toast.makeText(this, "No records found for the patient", Toast.LENGTH_SHORT).show();
+                    return; // Exit the method as there's no data to display
+                }
 
                 // Clear the current list to avoid duplications
                 modelHistoryList.clear();
@@ -145,7 +173,7 @@ public class ActivityHistory extends AppCompatActivity {
 
                     int skinDiseaseID = jsonObject.getInt("skinDiseaseID");
                     String skinDiseaseName = jsonObject.getString("skinDiseaseName");
-                    String skinDiseaseImageURL = jsonObject.getString("skinDiseaseImageURL");
+                    String skinDiseaseImageURL = jsonObject.getString("patientScanImage");
                     String patientAnalyzedDate = jsonObject.getString("patientAnalyzedDate");
 
                     // Create a new ModelHistory object and add it to the list
@@ -156,17 +184,49 @@ public class ActivityHistory extends AppCompatActivity {
                 // Notify the adapter that the data has changed
                 adapter.notifyDataSetChanged();
             } else {
-                // Login failed
+                // Log failure and show a toast message with the error message from the response
                 Log.e(TAG + " onRequestSuccess", "Message Response: " + message);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
+            // Handle JSON parsing errors
             Log.e(TAG + " onRequestSuccess", String.valueOf(e));
             Log.e(TAG + " onRequestSuccess", "Error parsing JSON response");
+            Toast.makeText(this, "Error parsing data", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void onRequestError(VolleyError error) {
         // Log and handle the error
         Log.e(TAG + " onFetchError", "Error Response: " + error.getMessage());
+
+        // Dismiss the loading dialog in case of an error
+        dismissLoadingDialog();
+
+        // Stop the swipe refresh animation
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void showLoadingDialog() {
+        // Check if the loading dialog is already added or visible
+        if (loadingDialogFragment != null && !loadingDialogFragment.isAdded() && !loadingDialogFragment.isVisible()) {
+            try {
+                loadingDialogFragment.show(getSupportFragmentManager(), "LoadingDialog");
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Error showing loading dialog: " + e.getMessage());
+            }
+        }
+    }
+
+    private void dismissLoadingDialog() {
+        // Check if the loading dialog is currently managed by FragmentManager before dismissing
+        if (loadingDialogFragment != null && loadingDialogFragment.isAdded()) {
+            try {
+                loadingDialogFragment.dismissAllowingStateLoss();
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Error dismissing loading dialog: " + e.getMessage());
+            }
+        }
     }
 }

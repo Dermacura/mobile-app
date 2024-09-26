@@ -22,17 +22,13 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.classes.MySharedPreferences;
-import com.thesis.dermocura.datas.*;
+import com.thesis.dermocura.datas.UserData;
+import com.thesis.dermocura.utils.LoadingDialogFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ActivityLogin extends AppCompatActivity {
-
-    // THIS ACTIVITY CLASS IS DONE AND CHECKED AT 1:46PM 8/6/2024
-    // MAINTAINABILITY: CHECK
-    // SCALABILITY: CHECK
-    // READABILITY: CHECK
 
     // Declare Views
     TextView tvTitle, tvSubTitle, tvForgotPassword, tvRegister;
@@ -40,6 +36,8 @@ public class ActivityLogin extends AppCompatActivity {
     ImageView ivEmailAddress, ivPassword;
     LinearLayout llEmailAddress, llPassword;
     MaterialButton btnContinue;
+
+    private LoadingDialogFragment loadingDialogFragment;
 
     // Declare Strings
     private static final String TAG = "ActivityLogin";
@@ -91,20 +89,21 @@ public class ActivityLogin extends AppCompatActivity {
     private void clickForgotPassword() {
         // Create an intent to start the PasswordReset activity
         Intent intentPasswordRecovery = new Intent(ActivityLogin.this, ActivityPasswordRecovery.class);
-
-        // Start the PasswordReset activity
         startActivity(intentPasswordRecovery);
     }
 
     private void clickNewAccount() {
         // Create an intent to start the Register activity
         Intent intentRegister = new Intent(ActivityLogin.this, ActivityRegister.class);
-
-        // Start the Register activity
         startActivity(intentRegister);
     }
 
     private void clickContinue() {
+        // Initialize the loading dialog fragment
+        if (loadingDialogFragment == null) {
+            loadingDialogFragment = new LoadingDialogFragment();
+        }
+
         // Retrieve user input from the input fields
         String email = etEmailAddress.getText().toString();
         String password = etPassword.getText().toString();
@@ -115,6 +114,7 @@ public class ActivityLogin extends AppCompatActivity {
 
         // Validate user input
         if (validateInputs(email, password)) {
+            loadingDialogFragment.show(getSupportFragmentManager(), "LoadingDialog"); // Show the loading dialog
             makeHTTPRequest(email, password);
         } else {
             Log.e(TAG + " clickContinue", "Validation Failed");
@@ -178,6 +178,9 @@ public class ActivityLogin extends AppCompatActivity {
     }
 
     private void onRequestSuccess(JSONObject response) {
+        if (loadingDialogFragment != null && loadingDialogFragment.isVisible()) {
+            loadingDialogFragment.dismiss();
+        }
         try {
             // Extract success status and message from the JSON response
             boolean success = response.getBoolean("success");
@@ -191,13 +194,15 @@ public class ActivityLogin extends AppCompatActivity {
                 // Extract the userData object from the response
                 JSONObject userDataJson = response.getJSONObject("userData");
 
-                // Create a UserData object from the JSON
+                // Create a UserData object from the JSON (Updated to include age and gender)
                 UserData userData = new UserData(
                         userDataJson.getString("patientEmail"),
                         userDataJson.getInt("patientID"),
                         userDataJson.getString("patientImageURL"),
                         userDataJson.getString("patientMobileNumber"),
-                        userDataJson.getString("patientName")
+                        userDataJson.getString("patientName"),
+                        userDataJson.getInt("patientAge"),           // New field for patient age
+                        userDataJson.getString("patientGender")      // New field for patient gender
                 );
 
                 // Save the UserData object to SharedPreferences
@@ -212,6 +217,8 @@ public class ActivityLogin extends AppCompatActivity {
                     Log.d(TAG + " UserData", "Patient Image URL: " + userData.getPatientImageURL());
                     Log.d(TAG + " UserData", "Patient Mobile Number: " + userData.getPatientMobileNumber());
                     Log.d(TAG + " UserData", "Patient Name: " + userData.getPatientName());
+                    Log.d(TAG + " UserData", "Patient Age: " + userData.getPatientAge());           // Log patient age
+                    Log.d(TAG + " UserData", "Patient Gender: " + userData.getPatientGender());     // Log patient gender
                 } else {
                     Log.d(TAG + " UserData", "No User Data found in SharedPreferences.");
                 }
@@ -234,8 +241,10 @@ public class ActivityLogin extends AppCompatActivity {
     }
 
     private void onRequestError(VolleyError error) {
+        if (loadingDialogFragment != null && loadingDialogFragment.isVisible()) {
+            loadingDialogFragment.dismiss();
+        }
         // Log and highlight entry
         Log.e(TAG + " onRequestError", "Error Response: " + error.getMessage());
     }
-
 }

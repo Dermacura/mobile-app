@@ -1,3 +1,4 @@
+// ActivityRegister.java
 package com.thesis.dermocura.activities;
 
 import android.content.Intent;
@@ -16,24 +17,36 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.JsonObject;
 import com.thesis.dermocura.R;
+import com.thesis.dermocura.datas.RegistrationData;
+import com.thesis.dermocura.retrof.ApiService;
+import com.thesis.dermocura.retrof.RetrofitClient;
+import com.thesis.dermocura.utils.LoadingDialogFragment;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ActivityRegister extends AppCompatActivity {
 
-    // THIS ACTIVITY CLASS IS DONE AND CHECKED AT
-    // MAINTAINABILITY:
-    // SCALABILITY:
-    // READABILITY:
-
     // Declare Views
     TextView tvTitle, tvSubTitle, tvLogin;
-    EditText etFullName, etEmailAddress, etPhoneNumber;
-    ImageView ivFullName, ivEmailAddress, ivPhoneNumber;
-    LinearLayout llFullName, llEmailAddress, llPhoneNumber;
+    EditText etEmailAddress, etPassword, etConfirmPassword;
+    ImageView ivEmailAddress, ivPassword, ivConfirmPassword;
+    LinearLayout llEmailAddress, llPassword, llConfirmPassword;
     MaterialButton btnContinue;
 
-    // Declare Strings
+    // Declare Strings and loading dialog
     private static final String TAG = "ActivityRegister";
+    private String email, password;
+    private LoadingDialogFragment loadingDialogFragment;
+    private boolean isRequestInProgress = false; // Flag to prevent multiple requests
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,45 +69,66 @@ public class ActivityRegister extends AppCompatActivity {
         tvTitle = findViewById(R.id.tvTitle);
         tvSubTitle = findViewById(R.id.tvSubTitle);
         tvLogin = findViewById(R.id.tvLogin);
+
         // Edit Texts
-        etFullName = findViewById(R.id.etFullName);
         etEmailAddress = findViewById(R.id.etEmailAddress);
-        etPhoneNumber = findViewById(R.id.etPhoneNumber);
+        etPassword = findViewById(R.id.etPassword);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
+
         // Image Views
-        ivFullName = findViewById(R.id.ivFullName);
         ivEmailAddress = findViewById(R.id.ivEmailAddress);
-        ivPhoneNumber = findViewById(R.id.ivPhoneNumber);
+        ivPassword = findViewById(R.id.ivPassword);
+        ivConfirmPassword = findViewById(R.id.ivConfirmPassword);
+
         // Linear Layouts
-        llFullName = findViewById(R.id.llFullName);
         llEmailAddress = findViewById(R.id.llEmailAddress);
-        llPhoneNumber = findViewById(R.id.llPhoneNumber);
+        llPassword = findViewById(R.id.llPassword);
+        llConfirmPassword = findViewById(R.id.llConfirmPassword);
+
         // Material Buttons
         btnContinue = findViewById(R.id.btnContinue);
+
+        // Initialize Loading Dialog
+        loadingDialogFragment = new LoadingDialogFragment();
     }
 
     private void setOnClickListeners() {
-        // Clickable Material buttons
+        // Clickable Material button
         btnContinue.setOnClickListener(v -> clickContinue());
-        // Clickable Text Views
+        // Clickable Text View
         tvLogin.setOnClickListener(v -> clickLogin());
     }
 
     private void clickContinue() {
+        // Prevent multiple clicks by disabling the button and setting the flag
+        if (isRequestInProgress) return; // Exit if a request is already in progress
+        isRequestInProgress = true;
+        btnContinue.setEnabled(false); // Disable the button to prevent multiple clicks
+
         // Retrieve user input from the input fields
-        String name = etFullName.getText().toString();
-        String email = etEmailAddress.getText().toString();
-        String phone = etPhoneNumber.getText().toString();
+        email = etEmailAddress.getText().toString().trim();
+        password = etPassword.getText().toString().trim();
+        String confirmPassword = etConfirmPassword.getText().toString().trim();
 
         // Log user input for debugging purposes
-        Log.i(TAG + " clickContinue", "User Input name: " + name);
         Log.i(TAG + " clickContinue", "User Input email: " + email);
-        Log.i(TAG + " clickContinue", "User Input phone: " + phone);
+        Log.i(TAG + " clickContinue", "User Input password: " + password);
+        Log.i(TAG + " clickContinue", "User Input confirm password: " + confirmPassword);
 
         // Validate user input
-        if (validateInputs(name, email, phone)) {
-            sendDataIntent(name, email, phone);
+        if (validateInputs(email, password, confirmPassword)) {
+            Log.d(TAG, "User Input: " + email + ", " + password + ", " + confirmPassword);
+
+            // Show the loading dialog when the request starts
+            if (loadingDialogFragment != null && !loadingDialogFragment.isAdded()) {
+                loadingDialogFragment.show(getSupportFragmentManager(), "LoadingDialog");
+            }
+
+            // Send verification code to the user's email using Retrofit
+            sendVerificationCode(email);
         } else {
             Log.e(TAG + " clickContinue", "Validation Failed");
+            resetButtonState(); // Re-enable the button if validation fails
         }
     }
 
@@ -109,25 +143,32 @@ public class ActivityRegister extends AppCompatActivity {
         finish();
     }
 
-    private boolean validateInputs(String name, String email, String phone) {
-        // Validate name field - cannot be empty
-        if (name.isEmpty()) {
-            Log.e(TAG + " validateInputs", "Name cannot be empty!");
-            llFullName.setBackgroundResource(R.drawable.shape_edit_text_error);
-            return false;
-        }
-
+    private boolean validateInputs(String email, String password, String confirmPassword) {
         // Validate email field - cannot be empty and must be a valid email format
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Log.e(TAG + " validateInputs", "Email cannot be empty!");
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Log.e(TAG + " validateInputs", "Invalid email address!");
+            etEmailAddress.setError("Invalid email address");
+            etEmailAddress.requestFocus();
             llEmailAddress.setBackgroundResource(R.drawable.shape_edit_text_error);
             return false;
         }
 
-        // Validate phone field - cannot be empty and must be a valid phone format
-        if (phone.isEmpty() || !Patterns.PHONE.matcher(phone).matches()) {
-            Log.e(TAG + " validateInputs", "Phone cannot be empty!");
-            llPhoneNumber.setBackgroundResource(R.drawable.shape_edit_text_error);
+        // Validate password length
+        if (password.length() < 8 || password.length() > 16) {
+            Log.e(TAG + " validateInputs", "Password must be between 8 and 16 characters!");
+            etPassword.setError("Password must be between 8 and 16 characters");
+            etPassword.requestFocus();
+            llPassword.setBackgroundResource(R.drawable.shape_edit_text_error);
+            return false;
+        }
+
+        // Validate confirm password field - must match the password
+        if (!password.equals(confirmPassword)) {
+            Log.e(TAG + " validateInputs", "Passwords do not match!");
+            etConfirmPassword.setError("Passwords do not match");
+            etConfirmPassword.requestFocus();
+            llConfirmPassword.setBackgroundResource(R.drawable.shape_edit_text_error);
+            llPassword.setBackgroundResource(R.drawable.shape_edit_text_error);
             return false;
         }
 
@@ -135,16 +176,83 @@ public class ActivityRegister extends AppCompatActivity {
         return true;
     }
 
-    private void sendDataIntent(String name, String email, String phone) {
-        // Create an intent to start the SetPassword activity
-        Intent intentRegister = new Intent(ActivityRegister.this, ActivitySetPassword.class);
+    private void sendVerificationCode(String email) {
+        // Prepare JSON object for the request
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("email", email);
+        requestBody.addProperty("timestamp", getCurrentTimestamp()); // Add the timestamp
 
-        // Pass user data (name, email, phone) to the SetPassword activity
-        intentRegister.putExtra("name", name);
-        intentRegister.putExtra("email", email);
-        intentRegister.putExtra("phone", phone);
+        // Create the Retrofit service
+        ApiService apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
 
-        // Start the SetPassword activity
-        startActivity(intentRegister);
+        // Make the network call
+        Call<JsonObject> call = apiService.sendVerificationCode(requestBody);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                dismissLoadingDialog();
+                resetButtonState();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    boolean success = response.body().get("success").getAsBoolean();
+                    String message = response.body().get("message").getAsString();
+
+                    if (success) {
+                        // Verification or sending code successful
+                        Log.d(TAG + " onRequestSuccess", "Message Response: " + message);
+                        Log.d(TAG + " onRequestSuccess", "JSON Received: " + response.body());
+
+                        // Save Info
+                        RegistrationData registrationData = RegistrationData.getInstance();
+                        registrationData.setPatientEmail(email);
+                        registrationData.setPatientPassword(password);
+
+                        // Proceed to the next activity
+                        Intent intent = new Intent(ActivityRegister.this, ActivityRegisterVerify.class);
+                        startActivity(intent);
+                    } else {
+                        // Verification or sending code failed
+                        Log.e(TAG + " onRequestSuccess", "Message Response: " + message);
+
+                        // Display the error message if the email is already in use
+                        if (message.equals("This email is already registered. Please use a different email address.")) {
+                            etEmailAddress.setError("This email is already registered");
+                            etEmailAddress.requestFocus();
+                            llEmailAddress.setBackgroundResource(R.drawable.shape_edit_text_error);
+                        }
+                    }
+                } else {
+                    Log.e(TAG + " onRequestSuccess", "Failed Response: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                dismissLoadingDialog();
+                resetButtonState();
+                Log.e(TAG + " onRequestError", "Error Response: " + t.getMessage());
+            }
+        });
+    }
+
+    private void dismissLoadingDialog() {
+        if (loadingDialogFragment != null && loadingDialogFragment.isVisible()) {
+            loadingDialogFragment.dismiss();
+        }
+    }
+
+    private void resetButtonState() {
+        isRequestInProgress = false;
+        btnContinue.setEnabled(true); // Re-enable the button after request completion
+    }
+
+    // Add this method to generate the current timestamp in the desired format
+    private String getCurrentTimestamp() {
+        // Set the desired date format
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        // Set the timezone to Asia/Manila
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+        // Return the formatted current date and time
+        return sdf.format(new Date());
     }
 }

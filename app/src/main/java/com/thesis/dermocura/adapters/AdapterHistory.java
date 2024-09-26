@@ -1,6 +1,6 @@
 package com.thesis.dermocura.adapters;
 
-import com.thesis.dermocura.activities.ActivityAnalyzation;
+import com.thesis.dermocura.activities.Z_DELETED_ACTIVITY_ANALYZATION;
 import com.thesis.dermocura.datas.SkinDiseaseData;
 import com.thesis.dermocura.models.ModelHistory;
 
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryViewHolder> {
 
-    private static final String BASE_URL = "https://backend.dermocura.net/images/skin_diseases/";
+    private static final String BASE_URL = "https://zxky.tail07dc9b.ts.net/uploads/";
     private List<ModelHistory> modelHistoryList;
     private Context context;
 
@@ -45,7 +45,7 @@ public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryV
         String fullImageUrl = BASE_URL + model.getSkinDiseaseImageURL();
 
         int diseaseID = model.getSkinDiseaseID();
-        String diagnosis = "Diagnosis: " + model.getSkinDiseaseName();
+        String diagnosis = model.getSkinDiseaseName();
         String analyzedDate = "Scanned at " + model.getPatientAnalyzedDate();
 
         SkinDiseaseData skinDiseaseData = SkinDiseaseData.getInstance();
@@ -66,7 +66,7 @@ public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryV
         // Set the arrow icon
         holder.imageViewArrow.setImageResource(R.drawable.icon_bend_arrow);
         holder.imageViewArrow.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ActivityAnalyzation.class);
+            Intent intent = new Intent(context, Z_DELETED_ACTIVITY_ANALYZATION.class);
             context.startActivity(intent);
         });
     }

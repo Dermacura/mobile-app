@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
+
+    <!-- CardView with rounded corners wrapping the ImageView -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewClinicLogo"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="4dp">
+
+        <!-- Clinic Logo Image -->
+        <ImageView
+            android:id="@+id/ivClinicLogo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Doctor Name -->
+    <TextView
+        android:id="@+id/tvDoctorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/cardViewClinicLogo"
+        android:layout_marginStart="16dp"
+        android:text="Doctor Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text_color" />
+
+    <!-- Clinic Name -->
+    <TextView
+        android:id="@+id/tvClinicName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvDoctorName"
+        android:layout_toEndOf="@id/cardViewClinicLogo"
+        android:layout_marginStart="16dp"
+        android:text="Clinic Name"
+        android:textSize="16sp"
+        android:textColor="@color/secondary_text_color" />
+
+    <!-- Appointment Date -->
+    <TextView
+        android:id="@+id/tvAppointmentDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvClinicName"
+        android:layout_toEndOf="@id/cardViewClinicLogo"
+        android:layout_marginStart="16dp"
+        android:text="Appointment Date"
+        android:textSize="14sp"
+        android:textColor="@color/hint_color" />
+
+    <!-- Appointment Time -->
+    <TextView
+        android:id="@+id/tvAppointmentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvAppointmentDate"
+        android:layout_toEndOf="@id/cardViewClinicLogo"
+        android:layout_marginStart="16dp"
+        android:text="Appointment Time"
+        android:textSize="14sp"
+        android:textColor="@color/hint_color" />
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:text="Status"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_blue_dark" />
+</RelativeLayout>

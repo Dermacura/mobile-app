@@ -1,6 +1,9 @@
 package com.thesis.dermocura.activities;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -24,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.datas.LocationData;
@@ -33,7 +37,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -56,12 +59,13 @@ public class ActivityGeoLocation extends FragmentActivity implements OnMapReadyC
     private List<LocationData> locations; // To hold the list of locations
     private static final String TAG = "ActivityGeoLocation";
     private static final String URL = "https://backend.dermocura.net/android/fetchcliniclocation.php";
+    private static final float MAX_DISTANCE_KM = 50.0f; // Maximum distance in kilometers
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_geo_location);
+        setContentView(R.layout.activity_geolocation);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -78,9 +82,6 @@ public class ActivityGeoLocation extends FragmentActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        // Button to center on the user's current location
-        findViewById(R.id.btnCenterOnLocation).setOnClickListener(v -> centerOnUserLocation());
 
         // Set listener for the Spinner
         spinnerMarkers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -100,10 +101,33 @@ public class ActivityGeoLocation extends FragmentActivity implements OnMapReadyC
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Check location permissions
+        // Determine the current theme (dark mode or light mode)
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        int styleResId;
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            // Dark mode is active, use dark map style
+            styleResId = R.raw.map_style_dark;
+        } else {
+            // Light mode is active, use light map style
+            styleResId = R.raw.map_style_light;
+        }
+
+        // Apply the selected map style
+        try {
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(this, styleResId));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+
+        // Check location permissions and other logic...
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Request location permissions if not granted
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
@@ -126,13 +150,6 @@ public class ActivityGeoLocation extends FragmentActivity implements OnMapReadyC
                         fetchClinicLocations();
                     }
                 });
-    }
-
-    private void centerOnUserLocation() {
-        if (mMap != null && currentLocation != null) {
-            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-        }
     }
 
     private void fetchClinicLocations() {
@@ -180,15 +197,25 @@ public class ActivityGeoLocation extends FragmentActivity implements OnMapReadyC
                     double clinicLatitude = clinic.getDouble("clinicLatitude");
                     double clinicLongitude = clinic.getDouble("clinicLongitude");
 
-                    // Add marker to the map
-                    LatLng position = new LatLng(clinicLatitude, clinicLongitude);
-                    mMap.addMarker(new MarkerOptions().position(position).title(clinicName));
+                    // Create a Location object for the clinic
+                    Location clinicLocation = new Location("");
+                    clinicLocation.setLatitude(clinicLatitude);
+                    clinicLocation.setLongitude(clinicLongitude);
 
-                    // Add location data to the list
-                    locations.add(new LocationData(clinicLatitude, clinicLongitude, clinicName, "Marker"));
+                    // Calculate the distance to the user's location
+                    float distanceToClinic = currentLocation.distanceTo(clinicLocation) / 1000.0f; // Convert to kilometers
 
-                    // Add clinic name to the list for the Spinner
-                    clinicNames.add(clinicName);
+                    if (distanceToClinic <= MAX_DISTANCE_KM) {
+                        // Add marker to the map if within 50 km
+                        LatLng position = new LatLng(clinicLatitude, clinicLongitude);
+                        mMap.addMarker(new MarkerOptions().position(position).title(clinicName));
+
+                        // Add location data to the list
+                        locations.add(new LocationData(clinicLatitude, clinicLongitude, clinicName, "Marker"));
+
+                        // Add clinic name to the list for the Spinner
+                        clinicNames.add(clinicName);
+                    }
                 }
 
                 // Populate the Spinner with the clinic names
@@ -214,51 +241,8 @@ public class ActivityGeoLocation extends FragmentActivity implements OnMapReadyC
         if (locations != null && !locations.isEmpty()) {
             LocationData selectedLocation = locations.get(position);
             LatLng latLng = new LatLng(selectedLocation.getLatitude(), selectedLocation.getLongitude());
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
         }
-    }
-
-    private String getCityFromLocation(Location location) {
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        List<Address> addresses;
-        try {
-            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            if (addresses != null && !addresses.isEmpty()) {
-                String city = addresses.get(0).getLocality();
-                Log.d(TAG + " getCityFromLocation", "User City: " + city); // Add this line to log the city
-                return city; // Returns the city name
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private List<LocationData> filterLocationsByCity(String userCity, List<LocationData> allLocations) {
-        List<LocationData> filteredLocations = new ArrayList<>();
-        for (LocationData locationData : allLocations) {
-            if (userCity != null && userCity.equalsIgnoreCase(locationData.getCity())) {
-                filteredLocations.add(locationData);
-            }
-        }
-        return filteredLocations;
-    }
-
-    private void addMarkers(List<LocationData> locations) {
-        for (LocationData locationData : locations) {
-            LatLng position = new LatLng(locationData.getLatitude(), locationData.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(position).title(locationData.getName()));
-        }
-    }
-
-    private List<LocationData> getAllLocations() {
-        List<LocationData> locations = new ArrayList<>();
-
-        // Example locations
-        locations.add(new LocationData(6.1122175, 125.1724019, "STI Gensan", "Marker in STI Gensan"));
-        // Add more locations as needed
-
-        return locations;
     }
 
     @Override

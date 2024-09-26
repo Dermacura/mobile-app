@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_color"
+    android:layout_marginHorizontal="5dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvImageHolder"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        app:cardCornerRadius="10dp">
+
+        <ImageView
+            android:id="@+id/ivImagePreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
+
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Diagnosis Text -->
+    <TextView
+        android:id="@+id/tvTopText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/cvImageHolder"
+        android:layout_marginStart="16dp"
+        android:text="Dr. Full Name: "
+        android:fontFamily="@font/carlito_bold"
+        android:textColor="@color/primary_text_color"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <!-- Analyzed Date Text -->
+    <TextView
+        android:id="@+id/tvBottomText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTopText"
+        android:layout_toEndOf="@id/cvImageHolder"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Clinic At "
+        android:fontFamily="@font/carlito_regular"
+        android:textColor="@color/tertiary_text_color"
+        android:textSize="14sp" />
+
+    <!-- Arrow Icon -->
+    <ImageButton
+        android:id="@+id/ibButton"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/icon_user_plus"
+        android:backgroundTint="@color/background_color"
+        app:tint="@color/accent_color" />
+
+</RelativeLayout>

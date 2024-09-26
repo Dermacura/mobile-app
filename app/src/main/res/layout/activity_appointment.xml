@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ActivityAppointment"
+    android:background="@color/background_color">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,TextContrastCheck,ContentDescription,Autofill">
+
+        <!-- Header Layout -->
+        <LinearLayout
+            android:id="@+id/llHeader"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            style="@style/HeadNavFrame"
+            android:layout_marginTop="25dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/ibLeftArrow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/icon_arrow_left"
+                style="@style/HeadNavImage" />
+
+            <TextView
+                android:id="@+id/tvPageTitle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Set Appointment"
+                style="@style/HeadNavCenterTitle" />
+
+            <ImageButton
+                android:id="@+id/ibRightArrow"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/icon_arrow_right"
+                style="@style/HeadNavImage" />
+        </LinearLayout>
+
+        <!-- Select a Specialist Section -->
+        <TextView
+            android:id="@+id/tvSelectSpecialist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select a Specialist"
+            android:textSize="24sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/carlito_bold"
+            app:layout_constraintTop_toBottomOf="@id/llHeader"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Select a Clinic Subtitle -->
+        <TextView
+            android:id="@+id/tvSelectClinic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select a Clinic"
+            android:textSize="14sp"
+            android:textColor="@color/secondary_text_color"
+            android:fontFamily="@font/carlito_regular"
+            android:layout_marginTop="15dp"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectSpecialist"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Choose a Clinic Spinner -->
+        <Spinner
+            android:id="@+id/spinnerClinic"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectClinic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            android:background="@drawable/custom_spinner_background" />
+
+        <!-- Select a Doctor Subtitle -->
+        <TextView
+            android:id="@+id/tvSelectDoctor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select a Doctor"
+            android:textSize="14sp"
+            android:fontFamily="@font/carlito_regular"
+            android:textColor="@color/secondary_text_color"
+            android:layout_marginTop="15dp"
+            app:layout_constraintTop_toBottomOf="@id/spinnerClinic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Choose a Doctor Spinner -->
+        <Spinner
+            android:id="@+id/spinnerDoctor"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/tvSelectDoctor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            android:background="@drawable/custom_spinner_background" />
+
+        <!-- Divider -->
+        <View
+            android:id="@+id/divider_appointment"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            app:layout_constraintTop_toBottomOf="@id/spinnerDoctor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Time and Day Section -->
+        <TextView
+            android:id="@+id/tvTimeAndDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time and Day"
+            android:textSize="24sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/carlito_bold"
+            app:layout_constraintTop_toBottomOf="@id/divider_appointment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Choose a Day of the Week Spinner -->
+        <TextView
+            android:id="@+id/tvChooseDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose a day of the week"
+            android:textSize="14sp"
+            android:textColor="@color/secondary_text_color"
+            android:fontFamily="@font/carlito_regular"
+            android:layout_marginTop="15dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTimeAndDay"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Spinner
+            android:id="@+id/spinnerDay"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/tvChooseDay"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            android:background="@drawable/custom_spinner_background" />
+
+        <!-- Time Slot Spinner -->
+        <TextView
+            android:id="@+id/tvTimeSlot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time Slot"
+            android:textSize="14sp"
+            android:fontFamily="@font/carlito_regular"
+            android:textColor="@color/secondary_text_color"
+            android:layout_marginTop="15dp"
+            app:layout_constraintTop_toBottomOf="@id/spinnerDay"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Spinner
+            android:id="@+id/spinnerTimeSlot"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTimeSlot"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            android:background="@drawable/custom_spinner_background" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmitAppointment"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Continue"
+            style="@style/ClickButton"
+            android:layout_marginBottom="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

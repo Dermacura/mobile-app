@@ -1,5 +1,6 @@
 package com.thesis.dermocura.activities;
 
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -30,7 +31,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ActivityTelemedicine extends AppCompatActivity {
 
@@ -41,7 +44,7 @@ public class ActivityTelemedicine extends AppCompatActivity {
     private List<ModelChat> messageList;
 
     private int patientID = 2;
-    private int userAccID = 0;
+    private int userAccID;
 
     private static final String TAG = "ActivityTelemedicine";
     private static final String FETCH_URL = "https://backend.dermocura.net/android/fetchmessages.php";
@@ -60,6 +63,8 @@ public class ActivityTelemedicine extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        userAccID = getIntent().getIntExtra("userAccID", 0);
 
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
@@ -138,10 +143,15 @@ public class ActivityTelemedicine extends AppCompatActivity {
         JSONObject requestBody = new JSONObject();
 
         try {
+            // Get current timestamp in the format 'yyyy-MM-dd HH:mm:ss'
+            String currentTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
+            // Add the parameters to the JSON object
             requestBody.put("patientID", patientID);
             requestBody.put("userAccID", userAccID);
             requestBody.put("telemedicineContent", messageContent);
-            requestBody.put("recipientRole", 0); // Assuming 0 means outgoing
+            requestBody.put("telemedicineTime", currentTimestamp);  // Add the generated timestamp
+            requestBody.put("recipientRole", 0);  // Assuming 0 means outgoing
         } catch (JSONException e) {
             Log.e(TAG + " sendMessage", String.valueOf(e));
             return;
@@ -163,8 +173,8 @@ public class ActivityTelemedicine extends AppCompatActivity {
                         if (success) {
                             Log.d(TAG + " sendMessage", "Message sent successfully: " + message);
 
-                            // Add the message to the RecyclerView
-                            ModelChat newMessage = new ModelChat(messageContent, "Now", true);
+                            // Add the message to the RecyclerView (No profile image for outgoing)
+                            ModelChat newMessage = new ModelChat(messageContent, "Now", true, null);
                             messageList.add(newMessage);
                             adapterChat.notifyItemInserted(messageList.size() - 1);
                             recyclerViewMessages.scrollToPosition(messageList.size() - 1);
@@ -195,20 +205,33 @@ public class ActivityTelemedicine extends AppCompatActivity {
                 Log.d(TAG + " onFetchSuccess", "Messages retrieved successfully: " + message);
                 JSONArray dataArray = response.getJSONArray("data");
 
-                messageList.clear();
+                messageList.clear();  // Clear the previous messages
 
                 for (int i = 0; i < dataArray.length(); i++) {
                     JSONObject jsonObject = dataArray.getJSONObject(i);
 
                     String telemedicineContent = jsonObject.getString("telemedicineContent");
-                    String telemedicineDate = jsonObject.getString("telemedicineDate");
+                    String telemedicineTime = jsonObject.getString("telemedicineTime");
                     boolean isOutgoing = jsonObject.getString("recipientRole").equals("outgoing");
 
-                    ModelChat messageItem = new ModelChat(telemedicineContent, telemedicineDate, isOutgoing);
+                    // Use profile image URL only for incoming messages
+                    String profileImageUrl = null;
+                    if (!isOutgoing) {
+                        profileImageUrl = jsonObject.getString("profile");
+                    }
+
+                    // Create the message model with profile image URL for incoming messages
+                    ModelChat messageItem = new ModelChat(telemedicineContent, telemedicineTime, isOutgoing, profileImageUrl);
                     messageList.add(messageItem);
                 }
 
-                adapterChat.notifyDataSetChanged();
+                adapterChat.notifyDataSetChanged();  // Notify the adapter to refresh the view
+
+                // Scroll to the last message
+                if (messageList.size() > 0) {
+                    recyclerViewMessages.scrollToPosition(messageList.size() - 1); // Scroll to the bottom
+                }
+
             } else {
                 Log.e(TAG + " onFetchSuccess", "Failed to retrieve messages: " + message);
                 Toast.makeText(this, "Failed to retrieve messages: " + message, Toast.LENGTH_SHORT).show();
@@ -218,7 +241,6 @@ public class ActivityTelemedicine extends AppCompatActivity {
             Toast.makeText(this, "Error parsing messages", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void onRequestError(VolleyError error) {
         Log.e(TAG + " onRequestError", "Error: " + error.getMessage());

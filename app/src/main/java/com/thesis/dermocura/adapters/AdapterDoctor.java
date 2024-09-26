@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.thesis.dermocura.R;
-import com.thesis.dermocura.activities.ActivityAppointmentInfo;
+import com.thesis.dermocura.activities.Z_HOLD_ACTIVITY_APPOINTMENT;
 import com.thesis.dermocura.models.ModelDoctor;
 
 import java.util.List;
@@ -58,7 +58,7 @@ public class AdapterDoctor extends RecyclerView.Adapter<AdapterDoctor.ViewHolder
         holder.ibButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, ActivityAppointmentInfo.class);
+                Intent intent = new Intent(context, Z_HOLD_ACTIVITY_APPOINTMENT.class);
                 intent.putExtra("doctorID", doctorID);
                 context.startActivity(intent);
             }
