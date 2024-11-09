@@ -115,7 +115,7 @@
             style="@style/TextButtonTitle"
             android:layout_marginHorizontal="30dp"
 
-            android:textColor="@color/error_color"
+            android:textColor="#B0F081"
 
             android:layout_marginBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"

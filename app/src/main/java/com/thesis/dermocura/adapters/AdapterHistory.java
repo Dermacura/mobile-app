@@ -23,7 +23,7 @@ import java.util.List;
 
 public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.HistoryViewHolder> {
 
-    private static final String BASE_URL = "https://zxky.tail07dc9b.ts.net/uploads/";
+    private static final String BASE_URL = "https://zxky.tail07dc9b.ts.net/user_images/";
     private List<ModelHistory> modelHistoryList;
     private Context context;
 

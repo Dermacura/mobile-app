@@ -1,5 +1,6 @@
 package com.thesis.dermocura.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,8 +36,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class ActivityAppointment extends AppCompatActivity {
 
@@ -172,12 +175,15 @@ public class ActivityAppointment extends AppCompatActivity {
                 String startTime = timeParts[0];  // Extract start time
                 String endTime = timeParts[1];    // Extract end time
 
-                Log.i(TAG, "Submitting appointment with docAvailID: " + selectedDocAvailID +
+                Log.i(TAG, "Proceeding to additional input with docAvailID: " + selectedDocAvailID +
                         ", startTime: " + startTime + ", endTime: " + endTime);
 
-                showLoadingDialog();
-                // Submit the appointment
-                submitAppointment(selectedDocAvailID, startTime, endTime);
+                // Move to the next screen to get phone number and additional input
+                Intent intent = new Intent(ActivityAppointment.this, ActivityAppointmentContact.class);
+                intent.putExtra("docAvailID", selectedDocAvailID);
+                intent.putExtra("startTime", startTime);
+                intent.putExtra("endTime", endTime);
+                startActivity(intent);
             } else {
                 Toast.makeText(ActivityAppointment.this, "Please select all fields", Toast.LENGTH_SHORT).show();
                 Log.w(TAG, "Appointment submission failed due to unselected fields");
@@ -278,23 +284,31 @@ public class ActivityAppointment extends AppCompatActivity {
             if (success) {
                 JSONArray doctorArray = response.getJSONArray("doctors");
                 doctorList.clear();
+                doctorIDs.clear(); // Clear existing IDs
                 doctorList.add("Select a Doctor");
 
-                if (doctorArray.length() > 0) {
-                    spinnerDoctor.setEnabled(true);  // Enable the doctor spinner if doctors are found
-                } else {
-                    spinnerDoctor.setEnabled(false);
-                    spinnerDay.setEnabled(false);
-                    spinnerTimeSlot.setEnabled(false);
-                }
+                // Use a set to track unique doctor IDs
+                Set<Integer> uniqueDoctorIds = new HashSet<>();
 
                 for (int i = 0; i < doctorArray.length(); i++) {
                     JSONObject doctorObj = doctorArray.getJSONObject(i);
                     String doctorName = doctorObj.getString("doctorName");
                     int doctorID = doctorObj.getInt("doctorID");
 
-                    doctorList.add(doctorName);  // Add doctor name to list
-                    doctorIDs.add(doctorID);     // Store corresponding doctorID
+                    // Add the doctor only if the ID hasn't been added before
+                    if (!uniqueDoctorIds.contains(doctorID)) {
+                        doctorList.add(doctorName);  // Add doctor name to list
+                        doctorIDs.add(doctorID);     // Store corresponding doctorID
+                        uniqueDoctorIds.add(doctorID); // Mark this ID as seen
+                    }
+                }
+
+                if (doctorList.size() > 1) { // Enable spinner only if there are doctors
+                    spinnerDoctor.setEnabled(true);
+                } else {
+                    spinnerDoctor.setEnabled(false);
+                    spinnerDay.setEnabled(false);
+                    spinnerTimeSlot.setEnabled(false);
                 }
 
                 // Populate spinner with doctors
@@ -313,6 +327,7 @@ public class ActivityAppointment extends AppCompatActivity {
             Log.e(TAG, "Error parsing doctors JSON", e);
         }
     }
+
 
     // Fetch availability based on selected doctor
     private void fetchAvailability(int doctorID) {
@@ -337,7 +352,6 @@ public class ActivityAppointment extends AppCompatActivity {
         queue.add(request);
     }
 
-    // Adjust the onSuccess method of fetchAvailability
     private void onFetchAvailabilitySuccess(JSONObject response) {
         dismissLoadingDialog(); // Dismiss dialog on response
         try {
@@ -349,12 +363,8 @@ public class ActivityAppointment extends AppCompatActivity {
                 docAvailIDs.clear();  // Clear previous docAvailIDs
                 availabilityList.add("Select a Day");
 
-                if (availabilityArray.length() > 0) {
-                    spinnerDay.setEnabled(true);  // Enable the day spinner if availability is found
-                } else {
-                    spinnerDay.setEnabled(false);
-                    spinnerTimeSlot.setEnabled(false);
-                }
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                Calendar currentCalendar = Calendar.getInstance();  // Get the current date
 
                 for (int i = 0; i < availabilityArray.length(); i++) {
                     JSONObject availObj = availabilityArray.getJSONObject(i);
@@ -362,13 +372,27 @@ public class ActivityAppointment extends AppCompatActivity {
                     String availDate = availObj.getString("avail_date");
                     int docAvailID = availObj.getInt("docAvailID");
 
-                    // Combine day and date (e.g., "Fri | 2024-09-13")
-                    String combinedDayDate = availDay + " | " + availDate;
-                    availabilityList.add(combinedDayDate);
-                    docAvailIDs.add(docAvailID);  // Store corresponding docAvailID
+                    // Parse the avail_date and compare with the current date
+                    Calendar availCalendar = Calendar.getInstance();
+                    availCalendar.setTime(dateFormat.parse(availDate));
+
+                    // Only add dates that are today or in the future
+                    if (!availCalendar.before(currentCalendar)) {
+                        String combinedDayDate = availDay + " | " + availDate;
+                        availabilityList.add(combinedDayDate);
+                        docAvailIDs.add(docAvailID);  // Store corresponding docAvailID
+                    }
                 }
 
-                // Populate the spinner with availability days and dates
+                if (availabilityList.size() > 1) {
+                    spinnerDay.setEnabled(true);  // Enable the day spinner if future availability is found
+                } else {
+                    spinnerDay.setEnabled(false);
+                    spinnerTimeSlot.setEnabled(false);
+                    Toast.makeText(this, "No future availability for this doctor", Toast.LENGTH_SHORT).show();
+                }
+
+                // Populate the spinner with future availability days and dates
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                         android.R.layout.simple_spinner_item, availabilityList);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -379,7 +403,7 @@ public class ActivityAppointment extends AppCompatActivity {
                 spinnerTimeSlot.setEnabled(false);
                 Log.w(TAG, "No availability found for doctorID: " + selectedDoctorID);
             }
-        } catch (JSONException e) {
+        } catch (JSONException | ParseException e) {
             Log.e(TAG, "Error parsing availability JSON", e);
         }
     }

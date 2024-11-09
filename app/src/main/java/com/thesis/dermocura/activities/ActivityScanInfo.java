@@ -1,14 +1,14 @@
 package com.thesis.dermocura.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -17,15 +17,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
 import com.thesis.dermocura.R;
-import com.thesis.dermocura.classes.ClassBase64Convert;
 import com.thesis.dermocura.classes.MySharedPreferences;
 import com.thesis.dermocura.datas.ScanData;
 import com.thesis.dermocura.datas.UserData;
@@ -34,22 +31,28 @@ import com.thesis.dermocura.utils.LoadingDialogFragment;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ActivityScanInfo extends AppCompatActivity {
 
     // Declare views
     ImageButton ibLeftArrow, ibRightArrow;
     TextView tvPageTitle, tvTitle, tvSubTitle, tvInformation;
-    EditText etDuration, etSkinType, etAdditionalInformation;
-    ImageView ivAge, ivDuration, ivGender;
-    LinearLayout llHeader, llAge, llDuration, llGender;
+    Spinner spinnerSkinType;
+    EditText etDuration, etAdditionalInformation;
+    ImageView ivDuration, ivAdditionalInformation;
+    LinearLayout llHeader, llDuration, llAdditionalInformation;
     MaterialButton btnContinue;
 
-    // Declare Strings
+    // Loading dialog instance
+    private LoadingDialogFragment loadingDialog;
+
+    // Declare constants
     private static final String TAG = "ActivityScanInfo";
-    private static final String URL = "https://zxky.tail07dc9b.ts.net/predict";
-    private LoadingDialogFragment loadingDialogFragment;
+    private static final String PREDICT_URL = "https://zxky.tail07dc9b.ts.net/predict";  // Update with your actual Flask server URL
+    private static final String SAVE_RECORD_URL = "https://backend.dermocura.net/android/analysis/save_record.php";  // URL to your PHP script
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +65,14 @@ public class ActivityScanInfo extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize the loading dialog
-        loadingDialogFragment = new LoadingDialogFragment();
-
-        // Initialize Methods
+        // Initialize views and loading dialog
         initializeObjects();
+        loadingDialog = new LoadingDialogFragment();
+
+        // Set up the skin type spinner
+        setupSkinTypeSpinner();
+
+        // Set click listeners
         setOnClickListeners();
     }
 
@@ -79,90 +85,206 @@ public class ActivityScanInfo extends AppCompatActivity {
         tvSubTitle = findViewById(R.id.tvSubTitle);
         tvInformation = findViewById(R.id.tvInformation);
 
-        etSkinType = findViewById(R.id.etSkinType);
+        spinnerSkinType = findViewById(R.id.spinnerSkinType);
         etDuration = findViewById(R.id.etDuration);
         etAdditionalInformation = findViewById(R.id.etAdditionalInformation);
 
-        ivAge = findViewById(R.id.ivSkinType);
-        ivDuration = findViewById(R.id.ivAdditional);
-        ivGender = findViewById(R.id.ivGender);
+        ivDuration = findViewById(R.id.ivDuration);
+        ivAdditionalInformation = findViewById(R.id.ivAdditionalInformation);
 
         llHeader = findViewById(R.id.llHeader);
-        llAge = findViewById(R.id.llSkinType);
-        llDuration = findViewById(R.id.llAdditional);
-        llGender = findViewById(R.id.llGender);
+        llDuration = findViewById(R.id.llDuration);
+        llAdditionalInformation = findViewById(R.id.llAdditionalInformation);
 
         btnContinue = findViewById(R.id.btnContinue);
     }
 
+    private void setupSkinTypeSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.skin_type_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSkinType.setAdapter(adapter);
+    }
+
     private void setOnClickListeners() {
-        // Clickable Material buttons
-        btnContinue.setOnClickListener(v -> {
-            clickContinue();
-        });
+        btnContinue.setOnClickListener(v -> clickContinue());
     }
 
     private void clickContinue() {
-        // Show loading dialog
-        if (loadingDialogFragment != null && !loadingDialogFragment.isAdded()) {
-            loadingDialogFragment.show(getSupportFragmentManager(), "LoadingDialog");
-        }
-
-        // Retrieve user input from the input fields
-        String skinType = etSkinType.getText().toString();
+        String skinType = spinnerSkinType.getSelectedItem().toString();
         String duration = etDuration.getText().toString();
         String additional = etAdditionalInformation.getText().toString();
-        Uri imageUri = ScanData.getInstance().getImageUri();
 
-        // Log user input for debugging purposes
-        Log.i(TAG + " clickContinue", "User Input skinType: " + skinType);
-        Log.i(TAG + " clickContinue", "User Input duration: " + duration);
-        Log.i(TAG + " clickContinue", "User Input additional: " + additional);
+        if (validateInputs(skinType, duration, additional)) {
+            storeInformation(skinType, duration, additional);
 
-        if (imageUri != null) {
-            try {
-                String base64String = ClassBase64Convert.convertUriToBase64(this, imageUri);
-                // Validate user input
-                if (validateInputs(skinType, duration, additional, imageUri)) {
-                    storeInformation(skinType, duration, additional);
-                } else {
-                    Log.e(TAG + " clickContinue", "Validation Failed");
-                }
-                makeHTTPRequest(base64String);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to convert Uri to Base64", e);
+            String base64Image = ScanData.getInstance().getBase64Image();
+            if (base64Image != null) {
+                showLoadingDialog();  // Show the loading dialog
+                sendPredictRequest(base64Image, additional);
+            } else {
+                Log.e(TAG, "No Base64 image found in ScanData");
             }
-        } else {
-            Log.d(TAG, "No imageUri found in ClassScanData.");
         }
     }
 
-    private boolean validateInputs(String age, String duration, String gender, Uri base64) {
-        if (age.isEmpty()) {
-            Log.e(TAG + " validateInputs", "age is empty!");
-            llAge.setBackgroundResource(R.drawable.shape_edit_text_error);
-            return false;
+    private void sendPredictRequest(String base64Image, String symptoms) {
+        // Create a JSON object for the request body
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("base64_image", base64Image);
+            requestBody.put("symptoms", symptoms);
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to create JSON request body", e);
+            return;
         }
 
-        if (duration.isEmpty()) {
-            Log.e(TAG + " validateInputs", "duration is empty!");
+        // Create a Volley request queue
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        // Create the POST request
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                PREDICT_URL,
+                requestBody,
+                response -> {
+                    try {
+                        boolean success = response.getBoolean("success");
+                        String message = response.getString("message");
+
+                        if (success) {
+                            // Parsing the result
+                            JSONObject result = response.getJSONObject("result");
+                            int predictedClassIndex = result.getInt("predicted_class_index");
+                            double confidence = result.getDouble("confidence");
+                            String filename = result.getString("filename");
+
+                            Log.d(TAG, "Prediction response:");
+                            Log.d(TAG, "Predicted class index: " + predictedClassIndex);
+                            Log.d(TAG, "Confidence: " + confidence);
+                            Log.d(TAG, "Filename: " + filename);
+
+                            // Save the record to the database
+                            saveRecordToDatabase(predictedClassIndex, confidence, filename);
+
+                        } else {
+                            Log.e(TAG, "Prediction failed: " + message);
+                            dismissLoadingDialog();
+                        }
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing response JSON", e);
+                        dismissLoadingDialog();
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "HTTP request failed", error);
+                    dismissLoadingDialog();  // Dismiss the loading dialog
+                }
+        );
+
+        // Add the request to the Volley queue
+        queue.add(request);
+    }
+
+    private void saveRecordToDatabase(int predictedClassIndex, double confidence, String filename) {
+        // Get patientID from SharedPreferences
+        UserData userData = MySharedPreferences.getInstance(this).getUserData();
+        if (userData == null) {
+            Log.e(TAG, "User data not found in SharedPreferences");
+            dismissLoadingDialog();
+            return;
+        }
+        int patientID = userData.getPatientID();
+
+        // Get other data from ScanData singleton
+        String skinType = ScanData.getInstance().getSkinType();
+        String duration = ScanData.getInstance().getDuration();
+        String additional = ScanData.getInstance().getAdditional();
+
+        // Get current date and time
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+
+        // Create a JSON object for the request body
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("patientID", patientID);
+            requestBody.put("skinDiseaseID", predictedClassIndex);
+            // requestBody.put("symptomDiseaseID", null); // Ignored as per your instruction
+            requestBody.put("patientSkinType", skinType);
+            requestBody.put("patientSkinDiseaseConfidence", confidence);
+            requestBody.put("patientDuration", duration);
+            requestBody.put("patientAdditional", additional);
+            requestBody.put("patientAnalyzedDate", currentDate);
+            requestBody.put("patientAnalyzedTime", currentTime);
+            requestBody.put("patientScanImage", filename);
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to create JSON request body for saving record", e);
+            dismissLoadingDialog();
+            return;
+        }
+
+        // Create a Volley request queue
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        // Create the POST request to save the record
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                SAVE_RECORD_URL,
+                requestBody,
+                response -> {
+                    try {
+                        boolean success = response.getBoolean("success");
+                        String message = response.getString("message");
+
+                        if (success) {
+                            Log.d(TAG, "Record saved successfully: " + message);
+
+                            // Clear ScanData on successful prediction
+                            ScanData.getInstance().clearScanData();
+
+                            // Launch the next activity with the predicted class index
+                            Intent intent = new Intent(ActivityScanInfo.this, ActivityDiseaseInfo.class);
+                            intent.putExtra("skinDiseaseID", String.valueOf(predictedClassIndex));
+                            intent.putExtra("confidence", confidence);
+                            startActivity(intent);
+                        } else {
+                            Log.e(TAG, "Failed to save record: " + message);
+                        }
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing save record response JSON", e);
+                    } finally {
+                        dismissLoadingDialog();  // Dismiss the loading dialog
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "HTTP request to save record failed", error);
+                    dismissLoadingDialog();  // Dismiss the loading dialog
+                }
+        );
+
+        // Add the request to the Volley queue
+        queue.add(request);
+    }
+
+    private boolean validateInputs(String skinType, String duration, String additional) {
+        boolean isValid = true;
+
+        if (skinType.isEmpty()) {
             llDuration.setBackgroundResource(R.drawable.shape_edit_text_error);
-            return false;
+            isValid = false;
         }
-
-        if (gender.isEmpty()) {
-            Log.e(TAG + " validateInputs", "gender is empty!");
-            llGender.setBackgroundResource(R.drawable.shape_edit_text_error);
-            return false;
+        if (duration.isEmpty()) {
+            llDuration.setBackgroundResource(R.drawable.shape_edit_text_error);
+            isValid = false;
         }
-
-        // Check if image is missing (base64 is null)
-        if (base64 == null) {
-            Log.e(TAG + " validateInputs", "Image is empty!");
-            return false;
+        if (additional.isEmpty()) {
+            llAdditionalInformation.setBackgroundResource(R.drawable.shape_edit_text_error);
+            isValid = false;
         }
-
-        return true;
+        return isValid;
     }
 
     private void storeInformation(String skinType, String duration, String additional) {
@@ -171,112 +293,17 @@ public class ActivityScanInfo extends AppCompatActivity {
         ScanData.getInstance().setAdditional(additional);
     }
 
-    private void makeHTTPRequest(String base64String) {
-        // Define keys for the JSON request body
-        String keyImage = "image";
-        String keyPatientID = "patientID";
-        String keyPatientSkinType = "patientSkinType";
-        String keyPatientDuration = "patientDuration";
-        String keyPatientAdditional = "patientAdditional";
-
-        // Retrieve the UserData object from SharedPreferences
-        MySharedPreferences prefs = MySharedPreferences.getInstance(this);
-        UserData userData = prefs.getUserData();
-
-        int patient_id = userData.getPatientID();
-        String skin_type = ScanData.getInstance().getSkinType();
-        String duration = ScanData.getInstance().getDuration();
-        String additional = ScanData.getInstance().getAdditional();
-
-
-        // Create a JSON object for the request body
-        JSONObject requestBody = new JSONObject();
-
-        // Create a Volley request queue
-        RequestQueue queue = Volley.newRequestQueue(this);
-        Log.d(TAG, "makeHTTPRequest: Image" + base64String);
-
-        // Populate the JSON request body
-        try {
-            requestBody.put(keyImage, base64String);
-            requestBody.put(keyPatientID, patient_id);
-            requestBody.put(keyPatientSkinType, skin_type);
-            requestBody.put(keyPatientDuration, duration);
-            requestBody.put(keyPatientAdditional, additional);
-        } catch (JSONException e) {
-            Log.e(TAG + " makeHTTPRequest", String.valueOf(e));
-            return;
-        }
-
-        // Create a JsonObjectRequest for a POST request to the specified URL
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST,
-                URL,
-                requestBody,
-                this::onRequestSuccess,
-                this::onRequestError
-        );
-
-        request.setRetryPolicy(new DefaultRetryPolicy(
-                10000, // Timeout in milliseconds (e.g., 10 seconds)
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, // Number of retries
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT // Backoff multiplier
-        ));
-
-        // Log the JSON request body for debugging
-        String stringJSON = requestBody.toString();
-        Log.i(TAG + " makeHTTPRequest", stringJSON);
-
-        // Add the request to the Volley request queue
-        queue.add(request);
-    }
-
-    private void onRequestSuccess(JSONObject response) {
-        dismissLoadingDialog(); // Dismiss loading dialog on success
-        try {
-            boolean success = response.getBoolean("success");
-            String message = response.getString("message");
-
-            if (success) {
-                String diseaseName = response.getString("disease_name");
-                String description = response.getString("disease_description");
-                String recommendation = response.getString("disease_recommendation");
-                String treatment = response.getString("disease_treatment");
-                String symptoms = response.getString("disease_symptoms");
-
-                Intent intent = new Intent(this, ActivityDiseaseInfo.class);
-                intent.putExtra("disease_name", diseaseName);
-                intent.putExtra("description", description);
-                intent.putExtra("recommendation", recommendation);
-                intent.putExtra("treatment", treatment);
-                intent.putExtra("symptoms", symptoms);
-                startActivity(intent);
-            } else {
-                Log.e(TAG + " onRequestSuccess", "Message Response: " + message);
-            }
-        } catch (JSONException e) {
-            Log.e(TAG + " onRequestSuccess", String.valueOf(e));
-            Log.e(TAG + " onRequestSuccess", "Error parsing JSON response");
+    // Show the loading dialog
+    private void showLoadingDialog() {
+        if (loadingDialog != null && !loadingDialog.isAdded()) {
+            loadingDialog.show(getSupportFragmentManager(), "LoadingDialog");
         }
     }
 
-    private void onRequestError(VolleyError error) {
-        dismissLoadingDialog(); // Dismiss loading dialog on error
-        Log.e(TAG + " onRequestError", "Error Response: " + error.getMessage());
-        if (error.networkResponse != null) {
-            Log.e(TAG + " onRequestError", "Status Code: " + error.networkResponse.statusCode);
-            try {
-                String responseBody = new String(error.networkResponse.data, "utf-8");
-                Log.e(TAG + " onRequestError", "Response Body: " + responseBody);
-            } catch (Exception e) {
-                Log.e(TAG + " onRequestError", "Failed to parse error response", e);
-            }
-        }
-    }
-
+    // Dismiss the loading dialog
     private void dismissLoadingDialog() {
-        if (loadingDialogFragment != null && loadingDialogFragment.isVisible()) {
-            loadingDialogFragment.dismiss();
+        if (loadingDialog != null && loadingDialog.isAdded()) {
+            loadingDialog.dismiss();
         }
     }
 }

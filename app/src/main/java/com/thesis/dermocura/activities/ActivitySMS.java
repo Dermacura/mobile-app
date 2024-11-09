@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,9 +39,9 @@ public class ActivitySMS extends AppCompatActivity {
     private AdapterSMS adapterSMS;
     private List<ModelSMS> messageList;
     private static final String TAG = "ActivitySMS";
-    MaterialButton btnNewContact;
-
+    private MaterialButton btnNewContact;
     private RequestQueue queue;
+    private SwipeRefreshLayout swipeRefreshLayout; // Declare SwipeRefreshLayout
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,10 @@ public class ActivitySMS extends AppCompatActivity {
             // Start the new contact activity
             startActivity(intentNewContact);
         });
+
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this::refreshData); // Set the listener to call refreshData()
 
         // Initialize RecyclerView
         rvHistory = findViewById(R.id.rvHistory);
@@ -123,7 +128,18 @@ public class ActivitySMS extends AppCompatActivity {
         queue.add(request);
     }
 
+    private void refreshData() {
+        // Get the shared preferences and user data
+        MySharedPreferences prefs = MySharedPreferences.getInstance(this);
+        UserData userData = prefs.getUserData();
+        int userId = userData.getPatientID();
+
+        // Fetch the data again
+        fetchMessagesData(userId);
+    }
+
     private void onRequestSuccess(JSONObject response) {
+        swipeRefreshLayout.setRefreshing(false); // Stop the refresh indicator
         try {
             // Extract success status from the JSON response
             boolean success = response.getBoolean("success");
@@ -170,8 +186,10 @@ public class ActivitySMS extends AppCompatActivity {
     }
 
     private void onRequestError(VolleyError error) {
+        swipeRefreshLayout.setRefreshing(false); // Stop the refresh indicator
         // Log and handle the error
         Log.e(TAG, "Error Response: " + error.getMessage());
         Toast.makeText(this, "Error fetching data", Toast.LENGTH_LONG).show();
     }
 }
+

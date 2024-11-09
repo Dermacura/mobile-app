@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,6 +33,7 @@ public class ActivityContacts extends AppCompatActivity {
     private RecyclerView rvHistory;
     private AdapterContacts adapterContacts;
     private List<ModelContacts> contactsList;
+    private SwipeRefreshLayout swipeRefreshLayout; // Declare SwipeRefreshLayout
     private String TAG = "ActivityContacts";
 
     @Override
@@ -45,6 +47,10 @@ public class ActivityContacts extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this::fetchUsersData); // Set up the refresh listener
 
         // Initialize RecyclerView and List
         rvHistory = findViewById(R.id.rvHistory);
@@ -62,6 +68,9 @@ public class ActivityContacts extends AppCompatActivity {
     private void fetchUsersData() {
         // URL for the PHP API
         String URL = "https://backend.dermocura.net/android/fetchcontacts.php"; // Replace with your actual API endpoint
+
+        // Show refresh animation when fetching data
+        swipeRefreshLayout.setRefreshing(true);
 
         // Create a Volley request queue
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -83,6 +92,8 @@ public class ActivityContacts extends AppCompatActivity {
     }
 
     private void onRequestSuccess(JSONObject response) {
+        // Stop refresh animation when request succeeds
+        swipeRefreshLayout.setRefreshing(false);
         try {
             // Extract success status from the JSON response
             boolean success = response.getBoolean("success");
@@ -127,8 +138,9 @@ public class ActivityContacts extends AppCompatActivity {
     }
 
     private void onRequestError(VolleyError error) {
+        // Stop refresh animation when request fails
+        swipeRefreshLayout.setRefreshing(false);
         // Log and handle the error
         Log.e(TAG + " onRequestError", "Error Response: " + error.getMessage());
     }
-
 }

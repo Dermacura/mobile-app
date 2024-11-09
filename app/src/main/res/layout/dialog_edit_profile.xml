@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/background_color">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Profile"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/llFullName"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        style="@style/InputFrame"
+        android:padding="8dp"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:id="@+id/ivFullName"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Full Name Icon"
+            android:src="@drawable/icon_user"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            app:tint="@color/accent_color" />
+
+        <EditText
+            android:id="@+id/etEditName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Name"
+            android:inputType="textPersonName"
+            android:background="@android:color/transparent"
+            android:textColor="@color/primary_text_color" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llEmail"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        style="@style/InputFrame"
+        android:padding="8dp"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:id="@+id/ivEmail"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Email Icon"
+            android:src="@drawable/icon_envelope"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            app:tint="@color/accent_color" />
+
+        <EditText
+            android:id="@+id/etEditEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:background="@android:color/transparent"
+            android:textColor="@color/primary_text_color" />
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rgGender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+
+        <RadioButton
+            android:id="@+id/rbMale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Male" />
+
+        <RadioButton
+            android:id="@+id/rbFemale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Female" />
+
+        <RadioButton
+            android:id="@+id/rbOther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Other" />
+
+    </RadioGroup>
+
+
+    <!-- Buttons Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <!-- Cancel Button using MaterialButton -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            app:cornerRadius="10sp"
+            android:backgroundTint="@color/error_color"
+            android:textColor="@color/background_color"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Save Profile Button using MaterialButton -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            app:cornerRadius="10sp"
+            android:backgroundTint="@color/accent_color"
+            android:textColor="@color/background_color" />
+
+    </LinearLayout>
+
+</LinearLayout>

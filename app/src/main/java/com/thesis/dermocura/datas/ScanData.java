@@ -1,6 +1,5 @@
 package com.thesis.dermocura.datas;
 
-import android.net.Uri;
 import android.util.Log;
 
 public class ScanData {
@@ -8,7 +7,7 @@ public class ScanData {
     private static ScanData instance;
 
     private static final String TAG = "ClassScanData";
-    private Uri imageUri;
+    private String base64Image; // Add this to store the Base64 image string
     private String duration;
     private String skinType;
     private String additional;
@@ -24,15 +23,17 @@ public class ScanData {
         return instance;
     }
 
-    public Uri getImageUri() {
-        return imageUri;
+    // Get and Set methods for Base64 Image
+    public String getBase64Image() {
+        return base64Image;
     }
 
-    public void setImageUri(Uri imageUri) {
-        this.imageUri = imageUri;
-        Log.d(TAG + " setImageUri", "uri received: " + imageUri.toString());
+    public void setBase64Image(String base64Image) {
+        this.base64Image = base64Image;
+        Log.d(TAG + " setBase64Image", "Base64 image set: " + (base64Image != null ? base64Image.substring(0, 30) : "null")); // Log part of the base64 for safety
     }
 
+    // Existing methods for duration, skinType, and additional information
     public String getDuration() {
         return duration;
     }
@@ -48,7 +49,7 @@ public class ScanData {
 
     public void setSkinType(String skin_type) {
         this.skinType = skin_type;
-        Log.d(TAG + " setDuration", "Duration received: " + skin_type);
+        Log.d(TAG + " setSkinType", "Skin Type received: " + skin_type);
     }
 
     public String getAdditional() {
@@ -57,11 +58,11 @@ public class ScanData {
 
     public void setAdditional(String additional) {
         this.additional = additional;
-        Log.d(TAG + " setDuration", "Duration received: " + additional);
+        Log.d(TAG + " setAdditional", "Additional Info received: " + additional);
     }
 
     public void clearScanData() {
-        this.imageUri = null;
+        this.base64Image = null;
         this.duration = null;
         this.skinType = null;
         this.additional = null;

@@ -2,13 +2,16 @@
 package com.thesis.dermocura.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +44,9 @@ public class ActivityRegister extends AppCompatActivity {
     ImageView ivEmailAddress, ivPassword, ivConfirmPassword;
     LinearLayout llEmailAddress, llPassword, llConfirmPassword;
     MaterialButton btnContinue;
+
+    CheckBox cbTerms;
+    TextView tvTerms;
 
     // Declare Strings and loading dialog
     private static final String TAG = "ActivityRegister";
@@ -90,6 +96,9 @@ public class ActivityRegister extends AppCompatActivity {
 
         // Initialize Loading Dialog
         loadingDialogFragment = new LoadingDialogFragment();
+
+        cbTerms = findViewById(R.id.cbTerms);
+        tvTerms = findViewById(R.id.tvTerms);
     }
 
     private void setOnClickListeners() {
@@ -97,6 +106,15 @@ public class ActivityRegister extends AppCompatActivity {
         btnContinue.setOnClickListener(v -> clickContinue());
         // Clickable Text View
         tvLogin.setOnClickListener(v -> clickLogin());
+        tvTerms.setOnClickListener(v -> openTermsAndPrivacyPolicy());
+    }
+
+    private void openTermsAndPrivacyPolicy() {
+        // Replace this URL with the actual terms and privacy policy link
+        String url = "https://backend.dermocura.net/";
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 
     private void clickContinue() {
@@ -104,6 +122,11 @@ public class ActivityRegister extends AppCompatActivity {
         if (isRequestInProgress) return; // Exit if a request is already in progress
         isRequestInProgress = true;
         btnContinue.setEnabled(false); // Disable the button to prevent multiple clicks
+
+        if (!cbTerms.isChecked()) {
+            Toast.makeText(this, "Please accept the Terms and Privacy Policy", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Retrieve user input from the input fields
         email = etEmailAddress.getText().toString().trim();

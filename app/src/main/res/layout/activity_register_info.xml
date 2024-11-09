@@ -75,9 +75,9 @@
 
             </LinearLayout>
 
-            <!-- Phone Number Input -->
+            <!-- Mobile Number Input -->
             <LinearLayout
-                android:id="@+id/llPhoneNumber"
+                android:id="@+id/llMobileNumber"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 style="@style/InputFrame"
@@ -87,24 +87,24 @@
                 app:layout_constraintTop_toBottomOf="@id/llFullName">
 
                 <ImageView
-                    android:id="@+id/ivPhoneNumber"
+                    android:id="@+id/ivMobileNumber"
                     android:layout_width="23dp"
                     android:layout_height="23dp"
                     style="@style/InputIcon"
-                    android:contentDescription="Phone Number Icon"
+                    android:contentDescription="Mobile Icon"
                     android:src="@drawable/icon_address_book" />
 
                 <EditText
-                    android:id="@+id/etPhoneNumber"
+                    android:id="@+id/etMobileNumber"
                     style="@style/InputEntry"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Phone Number"
+                    android:hint="Mobile Number"
                     android:inputType="phone" />
 
             </LinearLayout>
 
-            <!-- Gender Input -->
+            <!-- Gender Dropdown -->
             <LinearLayout
                 android:id="@+id/llGender"
                 android:layout_width="match_parent"
@@ -113,7 +113,7 @@
                 android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/llPhoneNumber">
+                app:layout_constraintTop_toBottomOf="@id/llMobileNumber">
 
                 <ImageView
                     android:id="@+id/ivGender"
@@ -124,13 +124,14 @@
                     android:src="@drawable/icon_gender"
                     app:tint="@color/hint_color" />
 
-                <EditText
-                    android:id="@+id/etGender"
-                    style="@style/InputEntry"
+                <Spinner
+                    android:id="@+id/spinnerGender"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Gender"
-                    android:inputType="text" />
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_edit_text"
+                    android:padding="8dp"
+                    android:spinnerMode="dropdown" />
 
             </LinearLayout>
 

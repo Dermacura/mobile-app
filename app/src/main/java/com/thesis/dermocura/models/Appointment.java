@@ -9,9 +9,11 @@ public class Appointment {
     private String endTime;
     private String availDate;
     private String status;
+    private String remarkInput;
 
-    // Constructor
-    public Appointment(int appointmentID, String doctorName, String clinicName, String clinicLogo, String startTime, String endTime, String availDate, String status) {
+    // Constructor updated to accept remarkInput
+    public Appointment(int appointmentID, String doctorName, String clinicName, String clinicLogo,
+                       String startTime, String endTime, String availDate, String status, String remarkInput) {
         this.appointmentID = appointmentID;
         this.doctorName = doctorName;
         this.clinicName = clinicName;
@@ -20,6 +22,7 @@ public class Appointment {
         this.endTime = endTime;
         this.availDate = availDate;
         this.status = status;
+        this.remarkInput = remarkInput; // Initialize the remarkInput field
     }
 
     // Getters and Setters
@@ -54,5 +57,12 @@ public class Appointment {
     public String getStatus() {
         return status;
     }
-}
 
+    public String getRemarkInput() {
+        return remarkInput;
+    }
+
+    public void setRemarkInput(String remarkInput) {
+        this.remarkInput = remarkInput;
+    }
+}

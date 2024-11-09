@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,7 +25,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.adapters.AdapterChat;
+import com.thesis.dermocura.classes.MySharedPreferences;
+import com.thesis.dermocura.datas.UserData;
 import com.thesis.dermocura.models.ModelChat;
+import com.thesis.dermocura.utils.LoadingDialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,8 +46,10 @@ public class ActivityTelemedicine extends AppCompatActivity {
     private ImageButton buttonSend;
     private AdapterChat adapterChat;
     private List<ModelChat> messageList;
+    private TextView tvEmptyMessages;
+    private LoadingDialogFragment loadingDialog; // Declare the LoadingDialogFragment
 
-    private int patientID = 2;
+    private int patientID;
     private int userAccID;
 
     private static final String TAG = "ActivityTelemedicine";
@@ -64,41 +70,57 @@ public class ActivityTelemedicine extends AppCompatActivity {
             return insets;
         });
 
+        // Retrieve userAccID and doctor's name from the intent
         userAccID = getIntent().getIntExtra("userAccID", 0);
+        String doctorName = getIntent().getStringExtra("doctorName");
 
+        // Set the doctor's name to the tvPageTitle TextView
+        TextView tvPageTitle = findViewById(R.id.tvPageTitle);
+        if (doctorName != null) {
+            tvPageTitle.setText(doctorName);
+        } else {
+            tvPageTitle.setText("Doctor");
+        }
+
+        // Initialize other views and fetch patientID
         recyclerViewMessages = findViewById(R.id.recyclerViewMessages);
         editTextMessage = findViewById(R.id.editTextMessage);
         buttonSend = findViewById(R.id.buttonSend);
+        tvEmptyMessages = findViewById(R.id.tvNoMessages); // Initialize the empty message TextView
+        loadingDialog = new LoadingDialogFragment(); // Initialize the loading dialog
 
+        // Set up RecyclerView and adapter
         messageList = new ArrayList<>();
         adapterChat = new AdapterChat(messageList);
-
         recyclerViewMessages.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewMessages.setAdapter(adapterChat);
 
+        // Fetch the patientID from the SharedPreferences
+        MySharedPreferences prefs = MySharedPreferences.getInstance(this);
+        UserData userData = prefs.getUserData();
+        if (userData != null) {
+            patientID = userData.getPatientID();
+        } else {
+            Log.e(TAG, "User data not found in SharedPreferences.");
+        }
+
+        // Show loading dialog and fetch the messages
+        showLoadingDialog();
         makeFetchRequest();
 
-        // Create the Runnable to refresh messages every 30 seconds
-        refreshRunnable = new Runnable() {
-            @Override
-            public void run() {
-                makeFetchRequest();
-                handler.postDelayed(this, 30000); // 30 seconds interval
-            }
+        // Set up auto-refresh for messages
+        refreshRunnable = () -> {
+            makeFetchRequest();
+            handler.postDelayed(refreshRunnable, 30000); // 30 seconds interval
         };
-
-        // Start the refresh Runnable
         handler.postDelayed(refreshRunnable, 30000);
 
-        // Set up the send button click listener
-        buttonSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String messageContent = editTextMessage.getText().toString().trim();
-                if (!messageContent.isEmpty()) {
-                    sendMessage(messageContent);
-                    editTextMessage.setText(""); // Clear the input field
-                }
+        // Set click listener for the send button
+        buttonSend.setOnClickListener(v -> {
+            String messageContent = editTextMessage.getText().toString().trim();
+            if (!messageContent.isEmpty()) {
+                sendMessage(messageContent);
+                editTextMessage.setText(""); // Clear the input field after sending
             }
         });
     }
@@ -119,6 +141,7 @@ public class ActivityTelemedicine extends AppCompatActivity {
             requestBody.put("userAccID", userAccID);
         } catch (JSONException e) {
             Log.e(TAG + " makeFetchRequest", String.valueOf(e));
+            dismissLoadingDialog();
             return;
         }
 
@@ -197,6 +220,7 @@ public class ActivityTelemedicine extends AppCompatActivity {
     }
 
     private void onFetchSuccess(JSONObject response) {
+        dismissLoadingDialog();
         try {
             boolean success = response.getBoolean("success");
             String message = response.getString("message");
@@ -225,25 +249,46 @@ public class ActivityTelemedicine extends AppCompatActivity {
                     messageList.add(messageItem);
                 }
 
+                // Check if the list is empty after fetching
+                if (messageList.isEmpty()) {
+                    tvEmptyMessages.setVisibility(View.VISIBLE); // Show the empty message text
+                } else {
+                    tvEmptyMessages.setVisibility(View.GONE); // Hide the empty message text
+                }
+
                 adapterChat.notifyDataSetChanged();  // Notify the adapter to refresh the view
 
                 // Scroll to the last message
-                if (messageList.size() > 0) {
+                if (!messageList.isEmpty()) {
                     recyclerViewMessages.scrollToPosition(messageList.size() - 1); // Scroll to the bottom
                 }
 
             } else {
                 Log.e(TAG + " onFetchSuccess", "Failed to retrieve messages: " + message);
-                Toast.makeText(this, "Failed to retrieve messages: " + message, Toast.LENGTH_SHORT).show();
+                tvEmptyMessages.setVisibility(View.VISIBLE); // Show the empty message text
             }
         } catch (JSONException e) {
             Log.e(TAG + " onFetchSuccess", String.valueOf(e));
-            Toast.makeText(this, "Error parsing messages", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void onRequestError(VolleyError error) {
+        dismissLoadingDialog();
         Log.e(TAG + " onRequestError", "Error: " + error.getMessage());
         Toast.makeText(this, "Failed to fetch/send messages", Toast.LENGTH_SHORT).show();
+    }
+
+    // Show the loading dialog
+    private void showLoadingDialog() {
+        if (loadingDialog != null && !loadingDialog.isAdded()) {
+            loadingDialog.show(getSupportFragmentManager(), "LoadingDialog");
+        }
+    }
+
+    // Dismiss the loading dialog
+    private void dismissLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isAdded()) {
+            loadingDialog.dismissAllowingStateLoss();
+        }
     }
 }

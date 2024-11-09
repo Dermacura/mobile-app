@@ -6,14 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.bumptech.glide.Glide;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.bumptech.glide.Glide;
 import com.thesis.dermocura.R;
 import com.thesis.dermocura.models.Appointment;
-
+import com.thesis.dermocura.activities.ActivityAppointmentList;
 import java.util.List;
 
 public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.ViewHolder> {
@@ -47,14 +45,24 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         // Set status
         holder.tvStatus.setText(appointment.getStatus());
 
-        // Load the clinic logo into the ImageView (you can use Glide or Picasso)
+        // Load clinic logo
         if (appointment.getClinicLogo() != null) {
             Glide.with(context)
-                    .load(appointment.getClinicLogo())  // Adjust this to your base URL + image path
+                    .load(appointment.getClinicLogo())
                     .into(holder.ivClinicLogo);
         } else {
-            // Set a placeholder if no image is available
             holder.ivClinicLogo.setImageResource(R.drawable.default_placeholder);
+        }
+
+        // Make Declined status clickable to show remarks
+        if (appointment.getStatus().equals("Declined")) {
+            holder.itemView.setOnClickListener(v -> {
+                // Trigger the custom remarks dialog
+                ((ActivityAppointmentList) context).showRemarksDialog(appointment.getRemarkInput());
+            });
+        } else {
+            // Disable click if not declined
+            holder.itemView.setOnClickListener(null);
         }
     }
 
@@ -63,7 +71,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         return appointmentList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvDoctorName, tvClinicName, tvAppointmentDate, tvAppointmentTime, tvStatus;
         ImageView ivClinicLogo;
 
@@ -79,4 +87,3 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         }
     }
 }
-

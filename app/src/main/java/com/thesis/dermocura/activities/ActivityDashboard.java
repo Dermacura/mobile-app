@@ -263,7 +263,6 @@ public class ActivityDashboard extends AppCompatActivity {
                     String doctorProfileImageUrl = "https://backend.dermocura.net/images/doctor_profile/" + doctorImage;
                     // Update UI with retrieved data
                     updateUI(lastScan, lastResult, appointmentDate, doctorName, doctorSpecialty, appointmentTime, doctorProfileImageUrl);
-                    showNoAppointment();
                 }
             } else {
                 Log.e(TAG, "Dashboard data retrieval failed: " + response.getString("message"));

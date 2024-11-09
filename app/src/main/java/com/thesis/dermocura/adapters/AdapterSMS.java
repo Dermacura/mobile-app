@@ -62,18 +62,18 @@ public class AdapterSMS extends RecyclerView.Adapter<AdapterSMS.MessageViewHolde
             holder.ivImagePreview.setImageResource(R.drawable.default_placeholder);
         }
 
-        // Set the click listener on the entire item view
+        // Inside AdapterSMS class, in onBindViewHolder method
         holder.itemView.setOnClickListener(v -> {
-            // Log userAccID
             Log.d(TAG, "Item clicked for userAccID: " + message.getUserAccID());
 
-            // Create an intent to start the new activity
+            // Create an intent to start ActivityTelemedicine
             Intent intent = new Intent(context, ActivityTelemedicine.class);
 
-            // Pass userAccID as an extra in the intent
+            // Pass userAccID and the doctor's name (tempFullName) as extras in the intent
             intent.putExtra("userAccID", message.getUserAccID());
+            intent.putExtra("doctorName", message.getTempFullName());  // Pass the doctor's name
 
-            // Start the new activity
+            // Start ActivityTelemedicine
             context.startActivity(intent);
         });
     }

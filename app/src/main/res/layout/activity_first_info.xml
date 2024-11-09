@@ -121,14 +121,14 @@
                 android:contentDescription="Skin Type Icon"
                 android:src="@drawable/icon_qrcode" />
 
-            <EditText
-                android:id="@+id/etSkinType"
-                style="@style/InputEntry"
+            <Spinner
+                android:id="@+id/spinnerSkinType"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="What's your skin type?"
-                android:inputType="text" />
-
+                android:layout_weight="1"
+                android:spinnerMode="dropdown"
+                android:background="@drawable/shape_edit_text"
+                android:padding="8dp" />
         </LinearLayout>
 
         <!-- Additional Information -->

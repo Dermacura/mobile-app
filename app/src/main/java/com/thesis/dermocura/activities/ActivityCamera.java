@@ -26,6 +26,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.thesis.dermocura.R;
+import com.thesis.dermocura.classes.ClassBase64Convert;
+import com.thesis.dermocura.datas.ScanData;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -33,8 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
-
-import com.thesis.dermocura.datas.ScanData;
 
 public class ActivityCamera extends AppCompatActivity {
 
@@ -146,7 +146,6 @@ public class ActivityCamera extends AppCompatActivity {
             return;
         }
 
-        ScanData.getInstance().setImageUri(imageUri);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(cameraIntent, 100);
     }
@@ -163,7 +162,6 @@ public class ActivityCamera extends AppCompatActivity {
         // Return the created file, or null if an error occurred
         return photoFile;
     }
-
 
     private Uri getUriForFile(File photoFile) {
         // Define the authority string for the FileProvider
@@ -191,17 +189,30 @@ public class ActivityCamera extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
             if (requestCode == 100) {
-                displayImageFromUri(ScanData.getInstance().getImageUri());
+                // Convert the imageUri to Base64 directly after capturing from the camera
+                convertAndDisplayImage(imageUri);
             } else if (requestCode == 200 && data != null && data.getData() != null) {
+                // Convert the imageUri to Base64 after selecting from the gallery
                 imageUri = data.getData();
-                ScanData.getInstance().setImageUri(imageUri);
-                displayImageFromUri(imageUri);
+                convertAndDisplayImage(imageUri);
             }
         }
     }
 
-    private void displayImageFromUri(Uri uri) {
-        ivCameraPreview.setImageURI(uri);
+    private void convertAndDisplayImage(Uri uri) {
+        try {
+            // Convert image to Base64
+            String base64Image = ClassBase64Convert.convertUriToBase64(this, uri);
+
+            // Store Base64 string in ScanData
+            ScanData.getInstance().setBase64Image(base64Image); // Store the Base64 string
+
+            // Display the image in ImageView
+            ivCameraPreview.setImageURI(uri);
+
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to convert Uri to Base64", e);
+        }
     }
 
     @Override

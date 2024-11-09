@@ -1,8 +1,11 @@
 package com.thesis.dermocura.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -125,17 +128,32 @@ public class ActivityAppointmentList extends AppCompatActivity {
                                 String startTime = appointmentObj.getString("start_time");
                                 String endTime = appointmentObj.getString("end_time");
                                 String availDate = appointmentObj.getString("avail_date");
-                                String status = appointmentObj.getString("status");
+                                int statusValue = appointmentObj.getInt("status");
+                                String remarkInput = appointmentObj.optString("remarkInput", "No remarks available"); // Get remarks
 
-                                // Add to the appointment list
-                                appointmentList.add(new Appointment(appointmentID, doctorName, clinicName, clinicLogo, startTime, endTime, availDate, status));
+                                String status;
+                                switch (statusValue) {
+                                    case 0:
+                                        status = "Pending";
+                                        break;
+                                    case 1:
+                                        status = "Accepted";
+                                        break;
+                                    case 2:
+                                        status = "Declined";
+                                        break;
+                                    default:
+                                        status = "Unknown";
+                                        break;
+                                }
+
+                                // Add to the appointment list with remarkInput
+                                appointmentList.add(new Appointment(appointmentID, doctorName, clinicName, clinicLogo, startTime, endTime, availDate, status, remarkInput));
                             }
 
-                            // Notify the adapter of data changes
+                            // Notify adapter
                             appointmentAdapter.notifyDataSetChanged();
 
-                            // No need to scroll, as the newest items are already shown at the top
-                            Log.d("Refresh", "Refresh completed on Appointment List");
                         } else {
                             Toast.makeText(this, "No appointments found.", Toast.LENGTH_SHORT).show();
                         }
@@ -157,5 +175,27 @@ public class ActivityAppointmentList extends AppCompatActivity {
         );
 
         queue.add(request);
+    }
+
+    // Show the custom remarks dialog
+    public void showRemarksDialog(String remarkMessage) {
+        // Create a custom dialog
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_remarks); // Set the custom layout for the dialog
+
+        // Set the dialog title
+        TextView title = dialog.findViewById(R.id.dialog_title);
+        title.setText("Remarks");
+
+        // Set the remark content in the dialog
+        TextView remarksContent = dialog.findViewById(R.id.dialog_remarks_content);
+        remarksContent.setText(remarkMessage.isEmpty() ? "No remarks available" : remarkMessage);
+
+        // Set the action for the Continue button
+        Button continueButton = dialog.findViewById(R.id.dialog_button_continue);
+        continueButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Show the dialog
+        dialog.show();
     }
 }

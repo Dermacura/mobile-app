@@ -31,4 +31,17 @@
 
     <!--    &lt;!&ndash; Doctor Information &ndash;&gt;-->
     <!--    <string name="doctor_image">Doctor&apos;s Image</string>-->
+
+    <string-array name="skin_type_options">
+        <item>Oily</item>
+        <item>Dry</item>
+        <item>Normal</item>
+        <item>Sensitive</item>
+    </string-array>
+
+    <string-array name="gender_options">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
 </resources>
